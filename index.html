@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
     <!-- Fuentes Elegantes e Infantiles Premium -->
@@ -34,13 +34,15 @@
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            overflow: hidden;
+            /* Cambiado: Permitimos scroll en el documento principal */
+            overflow-x: hidden; 
+            overflow-y: auto;
             position: relative;
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
         }
 
-        /* --- CONTENEDOR DE DIAPOSITIVAS EN PORCENTAJES --- */
+        /* --- CONTENEDOR CON SCROLL DESBLOQUEADO --- */
         .window-slider {
             display: flex;
             width: 400%;
@@ -51,14 +53,16 @@
 
         section {
             width: 25%;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
+            padding: 80px 20px 40px 20px; /* Más espacio arriba para no chocar con el botón de volver */
             position: relative;
+            /* Cambiado: Permitimos scroll interno libre si el contenido desborda hacia abajo */
             overflow-y: auto;
+            overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -216,7 +220,7 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE (ACTUALIZADA CON LA ETIQUETA) ================= -->
+        <!-- ================= SECCIÓN 3: BOUTIQUE ================= -->
         <section id="boutique">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
             <p class="section-subtitle" style="margin-bottom: 30px; font-style: italic;">"Para explorar, crear y jugar sin límites."</p>
