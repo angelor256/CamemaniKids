@@ -8,7 +8,7 @@
     <!-- Fuentes Elegantes e Infantiles Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -19,8 +19,8 @@
             --logo-amarillo: #f7d295;
             --logo-rosa: #f0b0bc;
             --logo-celeste: #aed9e0;
-            --text-dark: #5c4d42; /* Marrón orgánico suave en vez de negro agresivo */
-            --bg-cream: #fffbf7; /* Blanco roto premium, cálido */
+            --text-dark: #5c4d42; /* Marrón orgánico suave */
+            --bg-cream: #fffbf7; /* Blanco roto premium */
             
             --font-display: 'Fredoka', sans-serif;
             --font-sans: 'Quicksand', sans-serif;
@@ -36,7 +36,7 @@
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            overflow: hidden; /* Evita scrolls raros durante las transiciones slide */
+            overflow: hidden;
             height: 100vh;
             width: 100vw;
         }
@@ -44,7 +44,7 @@
         /* --- CONTENEDOR DE DIAPOSITIVAS (SLIDE ENGINE) --- */
         .window-slider {
             display: flex;
-            width: 400vw; /* 4 Secciones en total horizontalmente */
+            width: 400vw;
             height: 100vh;
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
         }
@@ -72,7 +72,6 @@
             z-index: 10;
         }
 
-        /* Contenedor para el Logo Original con Animación Sutil */
         .main-brand-logo {
             margin-bottom: 15px;
             cursor: pointer;
@@ -82,7 +81,6 @@
             align-items: center;
         }
 
-        /* Ajuste perfecto para que el logo se vea impecable */
         .main-brand-logo img {
             width: 100%;
             max-width: 420px; 
@@ -96,7 +94,7 @@
         }
 
         .brand-pitch {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 500;
             max-width: 480px;
             margin: 15px auto 40px auto;
@@ -104,36 +102,45 @@
             opacity: 0.85;
         }
 
-        /* Grid del Menú */
+        /* Grid del Menú - BOTONES REDISEÑADOS MÁS FINOS */
         .luxury-menu-grid {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
         .menu-sphere-btn {
-            background: white;
-            border: 2px solid transparent;
-            padding: 16px 32px;
-            border-radius: 50px;
-            font-family: var(--font-display);
-            font-size: 1.1rem;
-            font-weight: 600;
+            background: transparent;
+            padding: 10px 24px; /* Mucho más delgados */
+            border-radius: 30px;
+            font-family: var(--font-sans); /* Fuente más fina y limpia */
+            font-size: 0.95rem;
+            font-weight: 500; /* Letra estilizada, no tosca */
             color: var(--text-dark);
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(243, 166, 125, 0.12);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: none; /* Adiós sombra concha */
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            letter-spacing: 0.3px;
         }
 
-        .menu-sphere-btn i { font-size: 1.2rem; }
+        .menu-sphere-btn i { 
+            font-size: 1rem; 
+            opacity: 0.8;
+        }
         
-        .menu-sphere-btn.btn-alquiler:hover { background: var(--logo-lila); color: white; transform: scale(1.05); }
-        .menu-sphere-btn.btn-boutique:hover { background: var(--logo-melocoton); color: white; transform: scale(1.05); }
-        .menu-sphere-btn.btn-contacto:hover { background: var(--logo-celeste); color: white; transform: scale(1.05); }
+        /* Bordes sutiles individuales en lugar de sombras */
+        .menu-sphere-btn.btn-alquiler { border: 1.5px solid var(--logo-lila); }
+        .menu-sphere-btn.btn-boutique { border: 1.5px solid var(--logo-melocoton); }
+        .menu-sphere-btn.btn-contacto { border: 1.5px solid var(--logo-celeste); }
+
+        /* Efecto Hover delicado */
+        .menu-sphere-btn.btn-alquiler:hover { background: var(--logo-lila); color: white; transform: translateY(-2px); }
+        .menu-sphere-btn.btn-boutique:hover { background: var(--logo-melocoton); color: white; transform: translateY(-2px); }
+        .menu-sphere-btn.btn-contacto:hover { background: var(--logo-celeste); color: white; transform: translateY(-2px); }
 
         /* --- BOTÓN FLOTANTE PARA VOLVER AL INICIO --- */
         .home-anchor-btn {
@@ -141,22 +148,23 @@
             top: 30px; left: 50%;
             transform: translateX(-50%) translateY(-100px);
             background: white;
-            padding: 12px 28px;
-            border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            padding: 10px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             z-index: 1000;
-            font-family: var(--font-display);
-            font-weight: 600;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 500;
             color: var(--text-dark);
             cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .home-anchor-btn.visible { transform: translateX(-50%) translateY(0); }
-        .home-anchor-btn:hover { background: var(--text-dark); color: white; }
+        .home-anchor-btn:hover { background: var(--text-dark); color: white; border-color: var(--text-dark); }
 
         /* --- DISEÑO DE LAS PÁGINAS INTERNAS --- */
         .section-title { font-family: var(--font-display); font-size: 3rem; margin-bottom: 15px; text-align: center; }
@@ -250,14 +258,13 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA (CON LA NUEVA IMAGEN) ================= -->
+        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA ================= -->
         <section id="boutique">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
             <p class="section-subtitle">Nuestra icónica arena 100% natural, segura y diseñada en empaques boutique listos para explorar, crear y jugar sin límites.</p>
             
             <div class="premium-showcase-grid">
                 <div class="showcase-card" style="max-width: 500px; margin: 0 auto; grid-column: 1 / -1;">
-                    <!-- AQUÍ SE ENLAZA TU NUEVA IMAGEN Arena.jpg DIRECTAMENTE -->
                     <div class="card-media" style="background-image: url('Arena.jpg'); height: 340px;"></div>
                     <div class="card-info-box" style="text-align: center;">
                         <span class="premium-tag" style="background-color: var(--logo-amarillo); color: var(--text-dark);">100% Natural y Segura</span>
