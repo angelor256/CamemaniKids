@@ -36,34 +36,22 @@
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            /* BLOQUEO ABSOLUTO DE SCROLL LATERAL EN CELULARES */
+            /* Cambiado a scroll vertical controlado para evitar bugs de desplazamiento */
             overflow-x: hidden; 
-            overflow-y: hidden;
-            position: relative;
-            height: 100vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
             width: 100vw;
-        }
-
-        /* --- CONTENEDOR DE DIAPOSITIVAS (SLIDE ENGINE) --- */
-        .window-slider {
-            display: flex;
-            width: 400vw;
-            height: 100vh;
-            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-            overflow-x: hidden; 
         }
 
         section {
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 60px 20px;
             position: relative;
-            overflow-y: auto; 
-            overflow-x: hidden;
         }
 
         /* --- SECCIÓN 1: HOME (MENÚ CENTRALIZADO) --- */
@@ -118,14 +106,13 @@
 
         .menu-sphere-btn {
             background: transparent;
-            padding: 10px 24px;
+            padding: 12px 24px;
             border-radius: 30px;
             font-family: var(--font-sans);
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-dark);
             cursor: pointer;
-            box-shadow: none;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -146,25 +133,26 @@
         /* --- BOTÓN FLOTANTE PARA VOLVER AL INICIO --- */
         .home-anchor-btn {
             position: fixed;
-            top: 30px; left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            top: 20px; left: 20px;
             background: white;
-            padding: 10px 24px;
+            padding: 10px 20px;
             border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             z-index: 1000;
             font-family: var(--font-sans);
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: var(--text-dark);
             cursor: pointer;
             border: 1px solid rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
-        .home-anchor-btn.visible { transform: translateX(-50%) translateY(0); }
+        .home-anchor-btn.visible { opacity: 1; pointer-events: auto; }
         .home-anchor-btn:hover { background: var(--text-dark); color: white; border-color: var(--text-dark); }
 
         /* --- DISEÑO DE LAS PÁGINAS INTERNAS --- */
@@ -200,7 +188,7 @@
             background: transparent;
             border: 1.5px solid var(--text-dark);
             color: var(--text-dark);
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 30px;
             font-family: var(--font-sans);
             font-size: 0.9rem;
@@ -219,7 +207,7 @@
             color: white;
         }
 
-        /* --- MEJORA BOUTIQUE: ESTRUCTURA SPLIT SPLIT PARA CARACTERÍSTICAS Y BENEFICIOS --- */
+        /* --- ESTRUCTURA SPLIT BOUTIQUE --- */
         .split-boutique-container {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
@@ -309,173 +297,177 @@
 <body>
 
     <!-- Botón de regreso flotante -->
-    <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
-        <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
+    <div class="home-anchor-btn" id="backHomeBtn" onclick="scrollToSection('home')">
+        <i class="fa-solid fa-arrow-up"></i> Volver al Menú
     </div>
 
-    <!-- MAIN SLIDER ENGINE -->
-    <div class="window-slider" id="mainSlider">
+    <!-- ================= SECCIÓN 1: HOME ================= -->
+    <section id="home">
+        <div class="organic-blob" style="width: 300px; height: 300px; background: var(--logo-lila); top: 10%; left: 10%;"></div>
+        <div class="organic-blob" style="width: 400px; height: 400px; background: var(--logo-amarillo); bottom: -5%; right: -5%;"></div>
         
-        <!-- ================= SECCIÓN 1: HOME ================= -->
-        <section id="home">
-            <div class="organic-blob" style="width: 300px; height: 300px; background: var(--logo-lila); top: 10%; left: 10%;"></div>
-            <div class="organic-blob" style="width: 400px; height: 400px; background: var(--logo-amarillo); bottom: -5%; right: -5%;"></div>
-            
-            <div class="center-universe">
-                <div class="main-brand-logo" onclick="slideTo(0)">
-                    <img src="Logo.png" alt="Camemani Kids Logo">
-                </div>
+        <div class="center-universe">
+            <div class="main-brand-logo" onclick="scrollToSection('home')">
+                <img src="Logo.png" alt="Camemani Kids Logo">
+            </div>
 
-                <p class="brand-pitch">
-                    Diseñamos rincones de juego sofisticados y estimulación orgánica de lujo para los eventos infantiles más exclusivos de Costa Rica.
-                </p>
+            <p class="brand-pitch">
+                Diseñamos rincones de juego sofisticados y estimulación orgánica de lujo para los eventos infantiles más exclusivos de Costa Rica.
+            </p>
 
-                <div class="luxury-menu-grid">
-                    <button class="menu-sphere-btn btn-alquiler" onclick="slideTo(1)">
-                        <i class="fa-solid fa-castle"></i> Alquiler de Parques
-                    </button>
-                    <button class="menu-sphere-btn btn-boutique" onclick="slideTo(2)">
-                        <i class="fa-solid fa-jar"></i> Arena Sensorial
-                    </button>
-                    <button class="menu-sphere-btn btn-contacto" onclick="slideTo(3)">
-                        <i class="fa-solid fa-envelope"></i> Cotizar Espacio
+            <div class="luxury-menu-grid">
+                <button class="menu-sphere-btn btn-alquiler" onclick="scrollToSection('alquiler')">
+                    <i class="fa-solid fa-castle"></i> Alquiler de Parques
+                </button>
+                <button class="menu-sphere-btn btn-boutique" onclick="scrollToSection('boutique')">
+                    <i class="fa-solid fa-jar"></i> Arena Sensorial
+                </button>
+                <button class="menu-sphere-btn btn-contacto" onclick="scrollToSection('contacto')">
+                    <i class="fa-solid fa-envelope"></i> Cotizar Espacio
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECCIÓN 2: ALQUILER DE PARQUES ================= -->
+    <section id="alquiler">
+        <h2 class="section-title" style="color: var(--logo-lila);">Espacios Montessori</h2>
+        <p class="section-subtitle">Transformamos cualquier jardín o salón en un santuario estético de exploración libre y diversión segura.</p>
+        
+        <div class="premium-showcase-grid">
+            <!-- Tarjeta 1 -->
+            <div class="showcase-card">
+                <div class="card-media" style="background-image: url('https://raw.githubusercontent.com/AnhellO/pictures/main/image_a0587b.jpg');"></div>
+                <div class="card-info-box">
+                    <span class="premium-tag" style="color: var(--logo-lila);">Estimulación Pura</span>
+                    <h3 style="margin-top: 10px;">Areneros Infantiles Premium</h3>
+                    <p>Estructuras de madera pulida de alta calidad, equipadas con juguetes de estimulación seleccionados para mantener entretenidos a los pequeños exploradores.</p>
+                    <button class="action-quote-btn" onclick="cotizarProducto('Alquiler de Areneros Infantiles Premium')">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Cotizar Arenero
                     </button>
                 </div>
             </div>
-        </section>
 
-        <!-- ================= SECCIÓN 2: ALQUILER DE PARQUES ================= -->
-        <section id="alquiler">
-            <h2 class="section-title" style="color: var(--logo-lila);">Espacios Montessori</h2>
-            <p class="section-subtitle">Transformamos cualquier jardín o salón en un santuario estético de exploración libre y diversión segura.</p>
-            
-            <div class="premium-showcase-grid">
-                <!-- Tarjeta 1 -->
-                <div class="showcase-card">
-                    <div class="card-media" style="background-image: url('https://raw.githubusercontent.com/AnhellO/pictures/main/image_a0587b.jpg');"></div>
-                    <div class="card-info-box">
-                        <span class="premium-tag" style="color: var(--logo-lila);">Estimulación Pura</span>
-                        <h3 style="margin-top: 10px;">Areneros Infantiles Premium</h3>
-                        <p>Estructuras de madera pulida de alta calidad, equipadas con juguetes de estimulación seleccionados para mantener entretenidos a los pequeños exploradores.</p>
-                        <button class="action-quote-btn" onclick="cotizarProducto('Alquiler de Areneros Infantiles Premium')">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Cotizar Arenero
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 2 -->
-                <div class="showcase-card">
-                    <div class="card-media" style="background-image: url('https://images.unsplash.com/photo-1603354361200-e71e98cb829d?q=80&w=1200&auto=format&fit=crop');"></div>
-                    <div class="card-info-box">
-                        <span class="premium-tag" style="color: var(--logo-melocoton);">Filosofía Montessori</span>
-                        <h3 style="margin-top: 10px;">Mesas Sensoriales y de Juego</h3>
-                        <p>Diseñadas a la altura perfecta de los niños para fomentar la autonomía, concentración y el desarrollo motor fino a través del juego orgánico.</p>
-                        <button class="action-quote-btn" onclick="cotizarProducto('Alquiler de Mesas Sensoriales Montessori')">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Cotizar Mesa de Juego
-                        </button>
-                    </div>
+            <!-- Tarjeta 2 -->
+            <div class="showcase-card">
+                <div class="card-media" style="background-image: url('https://images.unsplash.com/photo-1603354361200-e71e98cb829d?q=80&w=1200&auto=format&fit=crop');"></div>
+                <div class="card-info-box">
+                    <span class="premium-tag" style="color: var(--logo-melocoton);">Filosofía Montessori</span>
+                    <h3 style="margin-top: 10px;">Mesas Sensoriales y de Juego</h3>
+                    <p>Diseñadas a la altura perfecta de los niños para fomentar la autonomía, concentración y el desarrollo motor fino a través del juego orgánico.</p>
+                    <button class="action-quote-btn" onclick="cotizarProducto('Alquiler de Mesas Sensoriales Montessori')">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Cotizar Mesa de Juego
+                    </button>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA ================= -->
-        <section id="boutique">
-            <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
-            <p class="section-subtitle">Para explorar, crear y jugar sin límites.</p>
+    <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA ================= -->
+    <section id="boutique">
+        <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
+        <p class="section-subtitle">Para explorar, crear y jugar sin límites.</p>
+        
+        <div class="split-boutique-container">
+            <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
             
-            <div class="split-boutique-container">
-                <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
+            <div class="boutique-content-pane">
+                <span class="premium-tag" style="background-color: var(--logo-amarillo); color: var(--text-dark); align-self: flex-start;">Boutique Oficial</span>
+                <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0 5px 0;">Colección Arcoíris Metódico</h3>
+                <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5;">Una experiencia táctil única, diseñada meticulosamente con colores vibrantes para cautivar los sentidos de forma orgánica.</p>
                 
-                <div class="boutique-content-pane">
-                    <span class="premium-tag" style="background-color: var(--logo-amarillo); color: var(--text-dark); align-self: flex-start;">Boutique Oficial</span>
-                    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0 5px 0;">Colección Arcoíris Metódico</h3>
-                    <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5;">Una experiencia táctil única, diseñada meticulosamente con colores vibrantes para cautivar los sentidos de forma orgánica.</p>
+                <div class="info-label-group">
+                    <div class="info-block-column">
+                        <h4 style="color: var(--logo-melocoton);"><i class="fa-solid fa-star"></i> Características</h4>
+                        <ul class="info-list-items">
+                            <li><i class="fa-solid fa-leaf" style="color: #8cb89f;"></i> 100% natural, no tóxica y segura.</li>
+                            <li><i class="fa-solid fa-hand-sparkles" style="color: var(--logo-melocoton);"></i> Textura gruesa, agradable al tacto.</li>
+                            <li><i class="fa-solid fa-shapes" style="color: var(--logo-lila);"></i> Ideal para actividades sensoriales y recreativas.</li>
+                        </ul>
+                    </div>
                     
-                    <div class="info-label-group">
-                        <div class="info-block-column">
-                            <h4 style="color: var(--logo-melocoton);"><i class="fa-solid fa-star"></i> Características</h4>
-                            <ul class="info-list-items">
-                                <li><i class="fa-solid fa-leaf" style="color: #8cb89f;"></i> 100% natural, no tóxica y segura.</li>
-                                <li><i class="fa-solid fa-hand-sparkles" style="color: var(--logo-melocoton);"></i> Textura gruesa, agradable al tacto.</li>
-                                <li><i class="fa-solid fa-shapes" style="color: var(--logo-lila);"></i> Ideal para actividades sensoriales y recreativas.</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="info-block-column">
-                            <h4 style="color: var(--logo-lila);"><i class="fa-solid fa-face-smile"></i> Beneficios del Juego</h4>
-                            <ul class="info-list-items">
-                                <li><i class="fa-solid fa-lightbulb" style="color: var(--logo-amarillo);"></i> Estimula la creatividad e imaginación.</li>
-                                <li><i class="fa-solid fa-child" style="color: var(--logo-melocoton);"></i> Desarrolla la motricidad fina y la coordinación.</li>
-                                <li><i class="fa-solid fa-brain" style="color: var(--logo-celeste);"></i> Promueve la concentración y la calma.</li>
-                                <li><i class="fa-solid fa-users" style="color: var(--logo-rosa);"></i> Fomenta el juego libre, la exploración y la socialización.</li>
-                            </ul>
-                        </div>
+                    <div class="info-block-column">
+                        <h4 style="color: var(--logo-lila);"><i class="fa-solid fa-face-smile"></i> Beneficios del Juego</h4>
+                        <ul class="info-list-items">
+                            <li><i class="fa-solid fa-lightbulb" style="color: var(--logo-amarillo);"></i> Estimula la creatividad e imaginación.</li>
+                            <li><i class="fa-solid fa-child" style="color: var(--logo-melocoton);"></i> Desarrolla la motricidad fina y la coordinación.</li>
+                            <li><i class="fa-solid fa-brain" style="color: var(--logo-celeste);"></i> Promueve la concentración y la calma.</li>
+                            <li><i class="fa-solid fa-users" style="color: var(--logo-rosa);"></i> Fomenta el juego libre, la exploración y la socialización.</li>
+                        </ul>
                     </div>
-
-                    <div class="badge-row">
-                        <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
-                        <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
-                    </div>
-
-                    <button class="action-quote-btn" style="border-color: var(--logo-melocoton); color: var(--logo-melocoton);" onclick="cotizarProducto('Bolsas de Arena Sensorial (Colección Arcoíris Metódico de 1kg)')">
-                        <i class="fa-solid fa-bag-shopping"></i> Cotizar Bolsas de Arena
-                    </button>
                 </div>
+
+                <div class="badge-row">
+                    <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
+                    <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
+                </div>
+
+                <button class="action-quote-btn" style="border-color: var(--logo-melocoton); color: var(--logo-melocoton);" onclick="cotizarProducto('Bolsas de Arena Sensorial (Colección Arcoíris Metódico de 1kg)')">
+                    <i class="fa-solid fa-bag-shopping"></i> Cotizar Bolsas de Arena
+                </button>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ================= SECCIÓN 4: CONTACTO / COTIZACIÓN ================= -->
-        <section id="contacto">
-            <h2 class="section-title" style="color: var(--logo-melocoton);">Planifiquemos un Día Inolvidable</h2>
-            <p class="section-subtitle">Pregunta por disponibilidad de alquiler de sets para fiestas en Heredia y todo el GAM o adquiere tus bolsas de arena sensorial.</p>
-            
-            <div class="luxury-contact-wrapper">
-                <form onsubmit="sendToWhatsApp(event)">
-                    <div class="form-row">
-                        <label><i class="fa-solid fa-user"></i> Tu Nombre</label>
-                        <input type="text" id="clientName" required placeholder="Ej. María Fernández">
-                    </div>
-                    <div class="form-row">
-                        <label><i class="fa-solid fa-calendar"></i> Fecha del Evento / Pedido</label>
-                        <input type="text" id="eventDate" placeholder="Ej. Sábado 15 de Octubre">
-                    </div>
-                    <div class="form-row">
-                        <label><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Qué experiencia te interesa?</label>
-                        <textarea id="eventDetails" rows="3" required placeholder="Ej. Me interesa el alquiler del set de areneros y 3 bolsas de arena..."></textarea>
-                    </div>
-                    <button type="submit" class="btn-luxury-submit">
-                        <i class="fa-brands fa-whatsapp"></i> Enviar a WhatsApp Directo
-                    </button>
-                </form>
-            </div>
-        </section>
+    <!-- ================= SECCIÓN 4: CONTACTO / COTIZACIÓN ================= -->
+    <section id="contacto">
+        <h2 class="section-title" style="color: var(--logo-melocoton);">Planifiquemos un Día Inolvidable</h2>
+        <p class="section-subtitle">Pregunta por disponibilidad de alquiler de sets para fiestas en Heredia y todo el GAM o adquiere tus bolsas de arena sensorial.</p>
+        
+        <div class="luxury-contact-wrapper">
+            <form onsubmit="sendToWhatsApp(event)">
+                <div class="form-row">
+                    <label><i class="fa-solid fa-user"></i> Tu Nombre</label>
+                    <input type="text" id="clientName" required placeholder="Ej. María Fernández">
+                </div>
+                <div class="form-row">
+                    <label><i class="fa-solid fa-calendar"></i> Fecha del Evento / Pedido</label>
+                    <input type="text" id="eventDate" placeholder="Ej. Sábado 15 de Octubre">
+                </div>
+                <div class="form-row">
+                    <label><i class="fa-solid fa-wand-magic-sparkles"></i> ¿Qué experiencia te interesa?</label>
+                    <textarea id="eventDetails" rows="3" required placeholder="Ej. Me interesa el alquiler del set de areneros y 3 bolsas de arena..."></textarea>
+                </div>
+                <button type="submit" class="btn-luxury-submit">
+                    <i class="fa-brands fa-whatsapp"></i> Enviar a WhatsApp Directo
+                </button>
+            </form>
+        </div>
+    </section>
 
-    </div>
-
-    <!-- LÓGICA DE TRANSICIONES Y RELLENO AUTOMÁTICO -->
+    <!-- LÓGICA DE DESPLAZAMIENTO NATIVO Y RELLENO -->
     <script>
-        const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
 
-        function slideTo(sectionIndex) {
-            slider.style.transform = `translateX(-${sectionIndex * 100}vw)`;
-            if (sectionIndex > 0) {
+        // Monitorear el scroll para ocultar o mostrar el botón de regreso de forma fluida
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
                 backHomeBtn.classList.add('visible');
             } else {
                 backHomeBtn.classList.remove('visible');
             }
+        });
+
+        // Función nativa robusta para ir a cualquier sección sin bugs de pixeles
+        function scrollToSection(id) {
+            const target = document.getElementById(id);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
-        // FUNCIÓN PREMIUM: Llena el formulario automáticamente y redirige al usuario
+        // Llena el formulario automáticamente y desplaza la página hacia el contacto
         function cotizarProducto(nombreProducto) {
             const txtArea = document.getElementById('eventDetails');
             txtArea.value = `Me interesa obtener más información y cotizar el servicio de: ${nombreProducto}.`;
             
-            // Redirige automáticamente a la sección de contacto (Índice 3)
-            slideTo(3);
+            // Desplazamiento nativo suave hacia la sección de formulario
+            scrollToSection('contacto');
             
-            // Hace foco en el primer campo para comodidad del usuario
-            document.getElementById('clientName').focus();
+            // Coloca el cursor directamente en el espacio de nombre para el cliente
+            setTimeout(() => {
+                document.getElementById('clientName').focus();
+            }, 800); // Pequeña pausa estética mientras se desliza la pantalla
         }
 
         function sendToWhatsApp(event) {
