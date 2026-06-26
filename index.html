@@ -34,36 +34,45 @@
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            /* Cambiado: Permitimos scroll en el documento principal */
-            overflow-x: hidden; 
-            overflow-y: auto;
-            position: relative;
-            min-height: 100vh;
+            height: 100vh;
             width: 100vw;
+            overflow: hidden; /* El scroll lo maneja el contenedor del slider */
         }
 
-        /* --- CONTENEDOR CON SCROLL DESBLOQUEADO --- */
+        /* --- CONTENEDOR DESBLOQUEADO CON SCROLL HORIZONTAL NATIVO Y EFECTO IMÁN --- */
         .window-slider {
             display: flex;
-            width: 400%;
+            width: 100vw;
             height: 100vh;
-            transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
-            will-change: transform;
+            overflow-x: auto; /* Desbloquea scroll horizontal en PC, Mac y Móvil */
+            overflow-y: hidden;
+            scroll-behavior: smooth; /* Hace que los brincos por botón sean fluidos */
+            scroll-snap-type: x mandatory; /* Aplica el efecto imán horizontalmente */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Ocultar barra de scroll estéticamente para mantener el look limpio */
+        .window-slider::-webkit-scrollbar {
+            display: none;
+        }
+        .window-slider {
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
         }
 
         section {
-            width: 25%;
-            min-height: 100vh;
+            flex: 0 0 100vw; /* Cada sección mide exactamente el ancho de la pantalla */
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 80px 20px 40px 20px; /* Más espacio arriba para no chocar con el botón de volver */
+            padding: 80px 20px 40px 20px;
             position: relative;
-            /* Cambiado: Permitimos scroll interno libre si el contenido desborda hacia abajo */
-            overflow-y: auto;
+            overflow-y: auto; /* Permite scroll vertical libre si el contenido es alto */
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
+            scroll-snap-align: start; /* Punto de anclaje para el efecto imán */
         }
 
         /* --- SECCIÓN 1: HOME --- */
@@ -291,16 +300,25 @@
         const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
 
+        // Navegación mediante clics usando scroll por coordenadas
         function slideTo(sectionIndex) {
-            const percentage = sectionIndex * -25;
-            slider.style.transform = `translateX(${percentage}%)`;
-            
-            if (sectionIndex > 0) {
+            const targetX = sectionIndex * window.innerWidth;
+            slider.scrollTo({
+                left: targetX,
+                behavior: 'smooth'
+            });
+        }
+
+        // Monitorea el scroll libre del usuario para mostrar/ocultar el botón flotante en tiempo real
+        slider.addEventListener('scroll', () => {
+            const currentPosition = slider.scrollLeft;
+            // Si el usuario se movió más allá de la mitad de la primera pantalla, muestra el botón
+            if (currentPosition > (window.innerWidth / 2)) {
                 backHomeBtn.classList.add('visible');
             } else {
                 backHomeBtn.classList.remove('visible');
             }
-        }
+        });
 
         function cotizarProducto(nombreProducto) {
             document.getElementById('eventDetails').value = `Me interesa obtener más información y cotizar: ${nombreProducto}.`;
