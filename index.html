@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
+    <!-- Fuentes Elegantes e Infantiles Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -12,13 +13,14 @@
 
     <style>
         :root {
+            /* Paleta extraída exactamente del logo Camemani Kids */
             --logo-lila: #bfa6d6;
             --logo-melocoton: #f3a67d;
             --logo-amarillo: #f7d295;
             --logo-rosa: #f0b0bc;
             --logo-celeste: #aed9e0;
-            --text-dark: #5c4d42; 
-            --bg-cream: #fffbf7; 
+            --text-dark: #5c4d42; /* Marrón orgánico suave en vez de negro agresivo */
+            --bg-cream: #fffbf7; /* Blanco roto premium, cálido */
             
             --font-display: 'Fredoka', sans-serif;
             --font-sans: 'Quicksand', sans-serif;
@@ -34,14 +36,15 @@
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            overflow: hidden; 
+            overflow: hidden; /* Evita scrolls raros durante las transiciones slide */
             height: 100vh;
             width: 100vw;
         }
 
+        /* --- CONTENEDOR DE DIAPOSITIVAS (SLIDE ENGINE) --- */
         .window-slider {
             display: flex;
-            width: 400vw; 
+            width: 400vw; /* 4 Secciones en total horizontalmente */
             height: 100vh;
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
         }
@@ -58,6 +61,7 @@
             overflow-y: auto;
         }
 
+        /* --- SECCIÓN 1: HOME (MENÚ CENTRALIZADO) --- */
         #home {
             background: radial-gradient(circle at center, #ffffff 0%, var(--bg-cream) 100%);
         }
@@ -68,7 +72,7 @@
             z-index: 10;
         }
 
-        /* --- CONTENEDOR PARA EL LOGO ORIGINAL REFINADO --- */
+        /* Contenedor para el Logo Original con Animación Sutil */
         .main-brand-logo {
             margin-bottom: 15px;
             cursor: pointer;
@@ -78,10 +82,10 @@
             align-items: center;
         }
 
-        /* Ajuste perfecto para que la imagen del logo se vea nítida y elegante */
+        /* Ajuste perfecto para que el logo se vea impecable */
         .main-brand-logo img {
             width: 100%;
-            max-width: 420px; /* Tamaño ideal en pantalla */
+            max-width: 420px; 
             height: auto;
             object-fit: contain;
         }
@@ -100,6 +104,7 @@
             opacity: 0.85;
         }
 
+        /* Grid del Menú */
         .luxury-menu-grid {
             display: flex;
             justify-content: center;
@@ -130,6 +135,7 @@
         .menu-sphere-btn.btn-boutique:hover { background: var(--logo-melocoton); color: white; transform: scale(1.05); }
         .menu-sphere-btn.btn-contacto:hover { background: var(--logo-celeste); color: white; transform: scale(1.05); }
 
+        /* --- BOTÓN FLOTANTE PARA VOLVER AL INICIO --- */
         .home-anchor-btn {
             position: fixed;
             top: 30px; left: 50%;
@@ -152,6 +158,7 @@
         .home-anchor-btn.visible { transform: translateX(-50%) translateY(0); }
         .home-anchor-btn:hover { background: var(--text-dark); color: white; }
 
+        /* --- DISEÑO DE LAS PÁGINAS INTERNAS --- */
         .section-title { font-family: var(--font-display); font-size: 3rem; margin-bottom: 15px; text-align: center; }
         .section-subtitle { font-size: 1.1rem; max-width: 600px; text-align: center; margin-bottom: 50px; opacity: 0.8; line-height: 1.6; }
         .premium-showcase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; width: 100%; max-width: 1200px; }
@@ -163,6 +170,7 @@
         .card-info-box p { font-size: 0.95rem; line-height: 1.6; opacity: 0.75; margin-bottom: 20px; }
         .premium-tag { display: inline-block; padding: 6px 14px; background: var(--bg-cream); border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* --- FORMULARIO LUXURY DE CONTACTO --- */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; }
         .form-row { margin-bottom: 20px; }
         .form-row label { display: block; font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 8px; color: var(--text-dark); }
@@ -171,6 +179,7 @@
         .btn-luxury-submit { width: 100%; background: var(--logo-melocoton); color: white; border: none; padding: 16px; border-radius: 50px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 10px 20px rgba(243, 166, 125, 0.3); transition: all 0.3s; }
         .btn-luxury-submit:hover { transform: scale(1.02); background: var(--text-dark); }
 
+        /* Orbes decorativos de fondo */
         .organic-blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: 1; pointer-events: none; }
         #alquiler { background-color: #f7f3fb; }
         #boutique { background-color: #fffaf7; }
@@ -179,22 +188,24 @@
 </head>
 <body>
 
+    <!-- Botón de regreso flotante -->
     <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
         <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
     </div>
 
+    <!-- MAIN SLIDER ENGINE -->
     <div class="window-slider" id="mainSlider">
         
-        <!-- ================= SECCIÓN 1: HOME (CON EL LOGO REAL) ================= -->
+        <!-- ================= SECCIÓN 1: HOME (CON EL LOGO REPARADO) ================= -->
         <section id="home">
             <div class="organic-blob" style="width: 300px; height: 300px; background: var(--logo-lila); top: 10%; left: 10%;"></div>
             <div class="organic-blob" style="width: 400px; height: 400px; background: var(--logo-amarillo); bottom: -5%; right: -5%;"></div>
             
             <div class="center-universe">
                 
-                <!-- AQUÍ SE COLOCA EL LOGO ORIGINAL DIRECTAMENTE -->
+                <!-- RUTA CORRECTA PARA GITHUB PAGES DE ACUERDO A TU ARCHIVO SUBIDO -->
                 <div class="main-brand-logo" onclick="slideTo(0)">
-                    <img src="https://raw.githubusercontent.com/AnhellO/pictures/main/image_a055d6.jpg" alt="Camemani Kids Logo">
+                    <img src="Logo.png" alt="Camemani Kids Logo">
                 </div>
 
                 <p class="brand-pitch">
@@ -258,7 +269,7 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 4: CONTACTO ================= -->
+        <!-- ================= SECCIÓN 4: CONTACTO / COTIZACIÓN ================= -->
         <section id="contacto">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Planifiquemos un Día Inolvidable</h2>
             <p class="section-subtitle">Pregunta por disponibilidad de alquiler de sets para fiestas en Heredia y todo el GAM o adquiere tus bolsas de arena sensorial.</p>
@@ -286,6 +297,7 @@
 
     </div>
 
+    <!-- LÓGICA DE TRANSICIONES SLIDE -->
     <script>
         const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
