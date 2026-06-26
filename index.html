@@ -102,7 +102,7 @@
             opacity: 0.85;
         }
 
-        /* Grid del Menú - BOTONES REDISEÑADOS MÁS FINOS */
+        /* Grid del Menú - Botones Finitos */
         .luxury-menu-grid {
             display: flex;
             justify-content: center;
@@ -112,14 +112,14 @@
 
         .menu-sphere-btn {
             background: transparent;
-            padding: 10px 24px; /* Mucho más delgados */
+            padding: 10px 24px;
             border-radius: 30px;
-            font-family: var(--font-sans); /* Fuente más fina y limpia */
+            font-family: var(--font-sans);
             font-size: 0.95rem;
-            font-weight: 500; /* Letra estilizada, no tosca */
+            font-weight: 500;
             color: var(--text-dark);
             cursor: pointer;
-            box-shadow: none; /* Adiós sombra concha */
+            box-shadow: none;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -127,17 +127,12 @@
             letter-spacing: 0.3px;
         }
 
-        .menu-sphere-btn i { 
-            font-size: 1rem; 
-            opacity: 0.8;
-        }
+        .menu-sphere-btn i { font-size: 1rem; opacity: 0.8; }
         
-        /* Bordes sutiles individuales en lugar de sombras */
         .menu-sphere-btn.btn-alquiler { border: 1.5px solid var(--logo-lila); }
         .menu-sphere-btn.btn-boutique { border: 1.5px solid var(--logo-melocoton); }
         .menu-sphere-btn.btn-contacto { border: 1.5px solid var(--logo-celeste); }
 
-        /* Efecto Hover delicado */
         .menu-sphere-btn.btn-alquiler:hover { background: var(--logo-lila); color: white; transform: translateY(-2px); }
         .menu-sphere-btn.btn-boutique:hover { background: var(--logo-melocoton); color: white; transform: translateY(-2px); }
         .menu-sphere-btn.btn-contacto:hover { background: var(--logo-celeste); color: white; transform: translateY(-2px); }
@@ -178,6 +173,68 @@
         .card-info-box p { font-size: 0.95rem; line-height: 1.6; opacity: 0.75; margin-bottom: 20px; }
         .premium-tag { display: inline-block; padding: 6px 14px; background: var(--bg-cream); border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* --- MEJORA BOUTIQUE: ESTRUCTURA SPLIT SPLIT PARA CARACTERÍSTICAS Y BENEFICIOS --- */
+        .split-boutique-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+            width: 100%;
+            max-width: 1050px;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.01);
+        }
+        .boutique-gallery-pane {
+            min-height: 450px;
+            background-size: cover;
+            background-position: center;
+        }
+        .boutique-content-pane {
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .info-label-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        .info-block-column h4 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-list-items {
+            list-style: none;
+        }
+        .info-list-items li {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            opacity: 0.85;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .info-list-items li i {
+            margin-top: 3px;
+            font-size: 0.85rem;
+        }
+        .badge-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
         /* --- FORMULARIO LUXURY DE CONTACTO --- */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; }
         .form-row { margin-bottom: 20px; }
@@ -192,6 +249,14 @@
         #alquiler { background-color: #f7f3fb; }
         #boutique { background-color: #fffaf7; }
         #contacto { background-color: #f2fafb; }
+
+        /* Adaptabilidad para pantallas más pequeñas */
+        @media (max-width: 850px) {
+            .split-boutique-container { grid-template-columns: 1fr; }
+            .boutique-gallery-pane { min-height: 280px; }
+            .boutique-content-pane { padding: 30px; }
+            .info-label-group { grid-template-columns: 1fr; gap: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -258,18 +323,48 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA ================= -->
+        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA CON CARACTERÍSTICAS EXTRAÍDAS EXACTAMENTE DE LA FOTO ================= -->
         <section id="boutique">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
-            <p class="section-subtitle">Nuestra icónica arena 100% natural, segura y diseñada en empaques boutique listos para explorar, crear y jugar sin límites.</p>
+            <p class="section-subtitle">Para explorar, crear y jugar sin límites.</p>
             
-            <div class="premium-showcase-grid">
-                <div class="showcase-card" style="max-width: 500px; margin: 0 auto; grid-column: 1 / -1;">
-                    <div class="card-media" style="background-image: url('Arena.jpg'); height: 340px;"></div>
-                    <div class="card-info-box" style="text-align: center;">
-                        <span class="premium-tag" style="background-color: var(--logo-amarillo); color: var(--text-dark);">100% Natural y Segura</span>
-                        <h3 style="margin-top: 15px; font-size: 1.8rem;">Colección Arcoíris Metódico (1kg)</h3>
-                        <p>Textura sedosa, colores vivos de grado alimenticio que capturan la atención de inmediato y fomentan la paz, tranquilidad y creatividad en casa.</p>
+            <div class="split-boutique-container">
+                <!-- Columna Izquierda: Imagen del producto -->
+                <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
+                
+                <!-- Columna Derecha: Toda la información oficial del empaque -->
+                <div class="boutique-content-pane">
+                    <span class="premium-tag" style="background-color: var(--logo-amarillo); color: var(--text-dark); align-self: flex-start;">Boutique Oficial</span>
+                    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0 5px 0;">Colección Arcoíris Metódico</h3>
+                    <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5;">Una experiencia táctil única, diseñada meticulosamente con colores vibrantes para cautivar los sentidos de forma orgánica.</p>
+                    
+                    <div class="info-label-group">
+                        <!-- Bloque 1: Características -->
+                        <div class="info-block-column">
+                            <h4 style="color: var(--logo-melocoton);"><i class="fa-solid fa-star"></i> Características</h4>
+                            <ul class="info-list-items">
+                                <li><i class="fa-solid fa-leaf" style="color: #8cb89f;"></i> 100% natural, no tóxica y segura.</li>
+                                <li><i class="fa-solid fa-hand-sparkles" style="color: var(--logo-melocoton);"></i> Textura gruesa, agradable al tacto.</li>
+                                <li><i class="fa-solid fa-shapes" style="color: var(--logo-lila);"></i> Ideal para actividades sensoriales y recreativas.</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Bloque 2: Beneficios -->
+                        <div class="info-block-column">
+                            <h4 style="color: var(--logo-lila);"><i class="fa-solid fa-face-smile"></i> Beneficios del Juego</h4>
+                            <ul class="info-list-items">
+                                <li><i class="fa-solid fa-lightbulb" style="color: var(--logo-amarillo);"></i> Estimula la creatividad e imaginación.</li>
+                                <li><i class="fa-solid fa-child" style="color: var(--logo-melocoton);"></i> Desarrolla la motricidad fina y la coordinación.</li>
+                                <li><i class="fa-solid fa-brain" style="color: var(--logo-celeste);"></i> Promueve la concentración y la calma.</li>
+                                <li><i class="fa-solid fa-users" style="color: var(--logo-rosa);"></i> Fomenta el juego libre, la exploración y la socialización.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Fila de Etiquetas Técnicas del Empaque -->
+                    <div class="badge-row">
+                        <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
+                        <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
                     </div>
                 </div>
             </div>
