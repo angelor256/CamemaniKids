@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
+    <!-- Fuentes Elegantes e Infantiles Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -33,23 +34,23 @@
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            overflow: hidden; /* Bloqueo total de gestos extraños del dedo */
+            overflow: hidden;
             position: relative;
             height: 100vh;
             width: 100vw;
         }
 
-        /* --- CONTENEDOR DE DIAPOSITIVAS EN PORCENTAJES (Inmune a bugs) --- */
+        /* --- CONTENEDOR DE DIAPOSITIVAS EN PORCENTAJES --- */
         .window-slider {
             display: flex;
-            width: 400%; /* 4 secciones = 400% */
+            width: 400%;
             height: 100vh;
             transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
             will-change: transform;
         }
 
         section {
-            width: 25%; /* Cada sección toma exactamente un cuarto del total (100vw) */
+            width: 25%;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -57,7 +58,7 @@
             align-items: center;
             padding: 40px 20px;
             position: relative;
-            overflow-y: auto; /* Permite scroll vertical interno si falta espacio */
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -166,12 +167,15 @@
 </head>
 <body>
 
+    <!-- Botón de regreso flotante -->
     <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
         <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
     </div>
 
+    <!-- MAIN SLIDER ENGINE -->
     <div class="window-slider" id="mainSlider">
         
+        <!-- ================= SECCIÓN 1: HOME ================= -->
         <section id="home">
             <div class="center-universe">
                 <div class="main-brand-logo" onclick="slideTo(0)">
@@ -186,6 +190,7 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 2: ALQUILER ================= -->
         <section id="alquiler">
             <h2 class="section-title" style="color: var(--logo-lila);">Espacios Montessori</h2>
             <p class="section-subtitle">Transformamos cualquier jardín o salón en un santuario estético de exploración libre.</p>
@@ -211,28 +216,50 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 3: BOUTIQUE (ACTUALIZADA CON LA ETIQUETA) ================= -->
         <section id="boutique">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
+            <p class="section-subtitle" style="margin-bottom: 30px; font-style: italic;">"Para explorar, crear y jugar sin límites."</p>
+            
             <div class="split-boutique-container">
                 <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
                 <div class="boutique-content-pane">
                     <span class="premium-tag" style="background-color: var(--logo-amarillo);">Boutique Oficial</span>
-                    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0;">Colección Arcoíris Metódico</h3>
-                    <p>Una experiencia táctil única, diseñada meticulosamente con colores vibrantes.</p>
+                    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0 5px 0;">Colección Arcoíris Metódico</h3>
+                    <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5; margin-bottom: 15px;">Una experiencia táctil única, diseñada meticulosamente con colores vibrantes para cautivar los sentidos de forma orgánica.</p>
+                    
                     <div class="info-label-group">
                         <div class="info-block-column">
-                            <h4 style="color: var(--logo-melocoton);">Características</h4>
+                            <h4 style="color: var(--logo-melocoton);"><i class="fa-solid fa-star"></i> Características</h4>
                             <ul class="info-list-items">
-                                <li>100% natural y segura.</li>
-                                <li>Textura agradable al tacto.</li>
+                                <li><i class="fa-solid fa-leaf" style="color: #8cb89f;"></i> 100% natural, no tóxica y segura.</li>
+                                <li><i class="fa-solid fa-hand-sparkles" style="color: var(--logo-melocoton);"></i> Textura gruesa, agradable al tacto.</li>
+                                <li><i class="fa-solid fa-shapes" style="color: var(--logo-lila);"></i> Ideal para actividades sensoriales y recreativas.</li>
+                            </ul>
+                        </div>
+                        <div class="info-block-column">
+                            <h4 style="color: var(--logo-lila);"><i class="fa-solid fa-child"></i> Beneficios en el Juego</h4>
+                            <ul class="info-list-items">
+                                <li><i class="fa-solid fa-lightbulb" style="color: var(--logo-amarillo);"></i> Estimula la creatividad e imaginación.</li>
+                                <li><i class="fa-solid fa-hand" style="color: var(--logo-melocoton);"></i> Desarrolla la motricidad fina y la coordinación.</li>
+                                <li><i class="fa-solid fa-brain" style="color: var(--logo-celeste);"></i> Promueve la concentración y la calma.</li>
+                                <li><i class="fa-solid fa-users" style="color: var(--logo-rosa);"></i> Fomenta el juego libre, la exploración y la socialización.</li>
                             </ul>
                         </div>
                     </div>
+
+                    <div class="badge-row">
+                        <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
+                        <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
+                        <span class="premium-tag" style="background: #fff5f5; font-size: 0.75rem; color: #c94c4c;"><i class="fa-solid fa-eye"></i> Uso bajo supervisión de un adulto</span>
+                    </div>
+
                     <button class="action-quote-btn" onclick="cotizarProducto('Bolsas de Arena Sensorial (1kg)')">Cotizar Bolsas de Arena</button>
                 </div>
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 4: CONTACTO ================= -->
         <section id="contacto">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Planifiquemos un Día Inolvidable</h2>
             <div class="luxury-contact-wrapper">
@@ -261,8 +288,6 @@
         const backHomeBtn = document.getElementById('backHomeBtn');
 
         function slideTo(sectionIndex) {
-            // Convertimos el índice a porcentajes negativos exactos basados en el total de secciones internas
-            // 0 -> 0%, 1 -> -25%, 2 -> -50%, 3 -> -75%
             const percentage = sectionIndex * -25;
             slider.style.transform = `translateX(${percentage}%)`;
             
@@ -275,10 +300,8 @@
 
         function cotizarProducto(nombreProducto) {
             document.getElementById('eventDetails').value = `Me interesa obtener más información y cotizar: ${nombreProducto}.`;
-            // Sección de Contacto es el índice número 3
             slideTo(3);
             
-            // Pausa limpia para esperar el slide y dar el foco al teclado de forma fluida
             setTimeout(() => {
                 document.getElementById('clientName').focus();
             }, 750);
