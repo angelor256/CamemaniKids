@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
     <!-- Fuentes Elegantes e Infantiles Premium -->
@@ -32,11 +32,14 @@
             padding: 0;
         }
 
-        body {
+        html, body {
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            overflow: hidden;
+            /* BLOQUEO ABSOLUTO DE SCROLL LATERAL EN CELULARES */
+            overflow-x: hidden; 
+            overflow-y: hidden;
+            position: relative;
             height: 100vh;
             width: 100vw;
         }
@@ -47,6 +50,8 @@
             width: 400vw;
             height: 100vh;
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+            /* Evita cualquier fuga de scroll horizontal involuntaria */
+            overflow-x: hidden; 
         }
 
         section {
@@ -58,7 +63,9 @@
             align-items: center;
             padding: 40px;
             position: relative;
-            overflow-y: auto;
+            /* Permite scroll vertical interno si el contenido es largo en pantallas pequeñas */
+            overflow-y: auto; 
+            overflow-x: hidden;
         }
 
         /* --- SECCIÓN 1: HOME (MENÚ CENTRALIZADO) --- */
@@ -73,9 +80,10 @@
         }
 
         .main-brand-logo {
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             cursor: pointer;
-            animation: float-logo 4s ease-in-out infinite alternate;
+            /* ANIMACIÓN MODIFICADA PARA QUE FLOTE MÁS (4 segundos de viaje fluido) */
+            animation: float-logo 4.5s ease-in-out infinite alternate;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -88,9 +96,11 @@
             object-fit: contain;
         }
 
+        /* AJUSTE DE FLOTACIÓN: Mayor rango vertical para un efecto más notorio y premium */
         @keyframes float-logo {
             0% { transform: translateY(0px) rotate(0deg); }
-            100% { transform: translateY(-8px) rotate(0.5deg); }
+            50% { transform: translateY(-10px) rotate(-0.5deg); }
+            100% { transform: translateY(-22px) rotate(0.8deg); }
         }
 
         .brand-pitch {
@@ -256,6 +266,7 @@
             .boutique-gallery-pane { min-height: 280px; }
             .boutique-content-pane { padding: 30px; }
             .info-label-group { grid-template-columns: 1fr; gap: 20px; }
+            .section-title { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -323,23 +334,20 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA CON CARACTERÍSTICAS EXTRAÍDAS EXACTAMENTE DE LA FOTO ================= -->
+        <!-- ================= SECCIÓN 3: BOUTIQUE DE ARENA ================= -->
         <section id="boutique">
             <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
             <p class="section-subtitle">Para explorar, crear y jugar sin límites.</p>
             
             <div class="split-boutique-container">
-                <!-- Columna Izquierda: Imagen del producto -->
                 <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
                 
-                <!-- Columna Derecha: Toda la información oficial del empaque -->
                 <div class="boutique-content-pane">
                     <span class="premium-tag" style="background-color: var(--logo-amarillo); color: var(--text-dark); align-self: flex-start;">Boutique Oficial</span>
                     <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0 5px 0;">Colección Arcoíris Metódico</h3>
                     <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5;">Una experiencia táctil única, diseñada meticulosamente con colores vibrantes para cautivar los sentidos de forma orgánica.</p>
                     
                     <div class="info-label-group">
-                        <!-- Bloque 1: Características -->
                         <div class="info-block-column">
                             <h4 style="color: var(--logo-melocoton);"><i class="fa-solid fa-star"></i> Características</h4>
                             <ul class="info-list-items">
@@ -349,7 +357,6 @@
                             </ul>
                         </div>
                         
-                        <!-- Bloque 2: Beneficios -->
                         <div class="info-block-column">
                             <h4 style="color: var(--logo-lila);"><i class="fa-solid fa-face-smile"></i> Beneficios del Juego</h4>
                             <ul class="info-list-items">
@@ -361,7 +368,6 @@
                         </div>
                     </div>
 
-                    <!-- Fila de Etiquetas Técnicas del Empaque -->
                     <div class="badge-row">
                         <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
                         <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
