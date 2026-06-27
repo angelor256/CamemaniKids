@@ -29,15 +29,52 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
+        // Referencias a la Base de Datos
         const stockRef = ref(db, 'inventario/arena_sensorial');
+        const nuevosProductosRef = ref(db, 'inventario/nuevos_productos');
 
         const MASTER_PIN = "2026"; 
         let inventarioArena = 0;
 
+        // Escuchar el producto base (Arena Sensorial)
         onValue(stockRef, (snapshot) => {
             const data = snapshot.val();
             inventarioArena = data !== null ? parseInt(data) : 12;
             actualizarInterfazStock(inventarioArena);
+        });
+
+        // ESCUCHAR NUEVOS PRODUCTOS DINÁMICOS EN EL ADMIN
+        onValue(nuevosProductosRef, (snapshot) => {
+            const tbody = document.getElementById('dynamicProductsTableBody');
+            if (!tbody) return;
+            
+            // Limpiar la tabla antes de renderizar
+            tbody.innerHTML = '';
+            
+            const data = snapshot.val();
+            if (data) {
+                // Iterar sobre cada producto guardado en Firebase
+                Object.keys(data).forEach((id) => {
+                    const producto = data[id];
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <strong>${producto.nombre}</strong><br>
+                            <small style="opacity: 0.6;">${producto.categoria}</small>
+                        </td>
+                        <td><span style="color:#4cc970; font-weight:bold;">Guardado en Cloud</span></td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <button class="qty-control-btn" onclick="modificarStockDinamico('${id}', -1, ${producto.stock})">-</button>
+                            <span class="qty-display">${producto.stock}</span>
+                            <button class="qty-control-btn" onclick="modificarStockDinamico('${id}', 1, ${producto.stock})">+</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; opacity:0.5; font-size:0.9rem;">No has agregado productos personalizados aún.</td></tr>`;
+            }
         });
 
         function actualizarInterfazStock(stock) {
@@ -74,6 +111,14 @@
             set(stockRef, nuevoStock);
         }
 
+        // Modificar el stock de los productos que agregues tú de forma dinámica
+        window.modificarStockDinamico = function(id, cambio, stockActual) {
+            let nuevoStock = stockActual + cambio;
+            if (nuevoStock < 0) nuevoStock = 0;
+            const itemRef = ref(db, `inventario/nuevos_productos/${id}/stock`);
+            set(itemRef, nuevoStock);
+        }
+
         window.verificarPin = function() {
             const pinInput = document.getElementById('adminPin');
             const errorText = document.getElementById('loginError');
@@ -89,7 +134,7 @@
             }
         }
 
-        // Función del Administrador para simular agregar un nuevo producto a Firebase
+        // Registrar físicamente en Firebase
         window.agregarNuevoProducto = function(event) {
             event.preventDefault();
             const nombre = document.getElementById('newProdName').value;
@@ -97,14 +142,12 @@
             const stockInicial = parseInt(document.getElementById('newProdStock').value);
 
             if(nombre && stockInicial >= 0) {
-                const nuevoProdRef = ref(db, `inventario/nuevos_productos`);
-                push(nuevoProdRef, {
+                push(nuevosProductosRef, {
                     nombre: nombre,
                     categoria: categoria,
                     stock: stockInicial,
                     timestamp: Date.now()
                 }).then(() => {
-                    alert(`¡Producto "${nombre}" registrado exitosamente en Firebase!`);
                     document.getElementById('formNuevoProducto').reset();
                 }).catch((error) => {
                     alert("Error al guardar: " + error.message);
@@ -208,7 +251,7 @@
         .color-card h4 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px; }
         .color-card p { font-size: 0.85rem; opacity: 0.8; line-height: 1.4; }
 
-        /* --- S4: NUEVA SECCIÓN PAQUETES --- */
+        /* --- S4: PAQUETES --- */
         .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; margin-top: 10px; }
         .package-card { background: white; padding: 40px 30px; border-radius: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
         .package-card.featured { border-color: var(--logo-melocoton); }
@@ -218,7 +261,7 @@
         .package-features { list-style: none; margin-bottom: 30px; text-align: left; padding: 0 10px; }
         .package-features li { font-size: 0.95rem; margin-bottom: 12px; opacity: 0.85; display: flex; align-items: center; gap: 10px; }
 
-        /* Preguntas Frecuentes */
+        /* FAQ */
         .faq-title { font-family: var(--font-display); font-size: 1.8rem; margin: 50px 0 20px 0; text-align: center; width: 100%; }
         .faq-container { width: 100%; max-width: 850px; background: white; padding: 35px; border-radius: 35px; box-shadow: 0 15px 40px rgba(0,0,0,0.02); }
         .faq-item { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid #f5ede6; }
@@ -237,7 +280,7 @@
         .btn-luxury-submit { width: 100%; background: var(--logo-melocoton); color: white; border: none; padding: 16px; border-radius: 50px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-luxury-submit:hover { background: var(--text-dark); }
 
-        /* --- S6: EXPANSIÓN PANEL ADMIN --- */
+        /* --- S6: PANEL ADMIN --- */
         .admin-auth-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); text-align: center; max-width: 400px; width: 100%; margin: auto; }
         .pin-input { width: 100%; text-align: center; font-size: 2rem; letter-spacing: 10px; padding: 10px; border-radius: 15px; border: 2px solid var(--logo-lila); outline: none; margin: 20px 0; font-family: var(--font-display); }
         
@@ -251,10 +294,9 @@
         .qty-control-btn:hover { background: var(--text-dark); color: white; }
         .qty-display { font-size: 1.1rem; font-weight: 700; width: 40px; display: inline-block; text-align: center; }
 
-        .add-product-form-box { background: var(--bg-cream); padding: 25px; border-radius: 20px; border: 1px dashed var(--logo-lila); }
+        .add-product-form-box { background: var(--bg-cream); padding: 25px; border-radius: 20px; border: 1px dashed var(--logo-lila); height: fit-content; }
         .add-product-form-box h4 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-        /* Colores de Fondo de las Secciones */
         #home { background-color: var(--bg-cream); }
         #alquiler { background-color: #f7f3fb; }
         #boutique { background-color: #fffaf7; }
@@ -279,7 +321,7 @@
 
     <div class="window-slider" id="mainSlider">
         
-        <!-- ================= SECCIÓN 1: HOME ================= -->
+        <!-- HOME -->
         <section id="home">
             <div class="center-universe">
                 <div class="main-brand-logo">
@@ -296,7 +338,7 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 2: ALQUILER DE PARQUES ================= -->
+        <!-- ALQUILER DE PARQUES -->
         <section id="alquiler">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-lila);">Parques Infantiles Estéticos</h2>
@@ -304,7 +346,6 @@
                 
                 <div class="parks-grid">
                     <div class="park-card">
-                        <!-- Sube una foto con el nombre parque_mini.jpg a GitHub -->
                         <div class="park-img-pane" style="background-image: url('parque_mini.jpg'); background-color: #e5dbed;">
                             <div class="park-age-badge">0 a 3 años</div>
                         </div>
@@ -318,7 +359,6 @@
                     </div>
 
                     <div class="park-card">
-                        <!-- Sube una foto con el nombre parque_maxi.jpg a GitHub -->
                         <div class="park-img-pane" style="background-image: url('parque_maxi.jpg'); background-color: #dbe7ed;">
                             <div class="park-age-badge">2 a 6 años</div>
                         </div>
@@ -334,7 +374,7 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE (ARENA SENSORIAL) ================= -->
+        <!-- BOUTIQUE (ARENA SENSORIAL) -->
         <section id="boutique">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
@@ -367,9 +407,6 @@
                                 </ul>
                             </div>
                         </div>
-                        <div style="margin-bottom: 20px; font-size: 0.85rem; font-weight: bold; background: #fcf8f5; padding: 8px 15px; border-radius: 10px; width: fit-content; color: var(--text-dark);">
-                            <i class="fa-solid fa-weight-hanging"></i> CONTENIDO NETO: 1 KG
-                        </div>
                         <button class="action-quote-btn" id="btnCotizarArena" onclick="cotizarProducto('Bolsas de Arena Sensorial Individuales')">Cotizar Bolsas de Arena</button>
                     </div>
                 </div>
@@ -388,19 +425,11 @@
                         <h4>Destello Amarillo</h4>
                         <p>Representa la luz del sol. Activa las zonas creativas de la curiosidad innata y el pensamiento lógico.</p>
                     </div>
-                    <div class="color-card" style="border-top-color: var(--logo-rosa);">
-                        <h4>Dulzura Rosa</h4>
-                        <p>Evoca ternura y empatía. Crea un ambiente seguro que fomenta la amabilidad y la autoexpresión libre.</p>
-                    </div>
-                    <div class="color-card" style="border-top-color: var(--logo-celeste);">
-                        <h4>Frescura Celeste</h4>
-                        <p>Evoca la inmensidad del cielo. Invita a la concentración profunda y estabiliza el ritmo armonioso del juego.</p>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 4: NUEVA SECCIÓN EXCLUSIVA DE PAQUETES ================= -->
+        <!-- PAQUETES -->
         <section id="paquetes">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-amarillo);">Kits y Paquetes de Regalo</h2>
@@ -411,11 +440,9 @@
                         <div>
                             <h3>Explorador Individual</h3>
                             <div class="package-price">₡4,500</div>
-                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:20px;">Perfecto para iniciar el viaje táctil.</p>
                             <ul class="package-features">
                                 <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 1 Bolsa de Arena Sensorial (1 kg)</li>
                                 <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Color premium a elegir</li>
-                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Empaque hermético reutilizable</li>
                             </ul>
                         </div>
                         <button class="action-quote-btn" onclick="cotizarProducto('Paquete Explorador Individual (₡4,500)')">Seleccionar Paquete</button>
@@ -426,46 +453,18 @@
                         <div>
                             <h3>Dúo Creativo</h3>
                             <div class="package-price">₡8,000</div>
-                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:20px;">Ideal para contrastar e integrar texturas.</p>
                             <ul class="package-features">
-                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 2 Bolsas de Arena Sensorial (2 kg en total)</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 2 Bolsas de Arena Sensorial (2 kg)</li>
                                 <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Mezcla 2 colores favoritos</li>
-                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Tarjeta con sugerencias de juego guiado</li>
                             </ul>
                         </div>
                         <button class="action-quote-btn" style="background:var(--text-dark); color:white;" onclick="cotizarProducto('Paquete Dúo Creativo (₡8,000)')">Seleccionar Paquete</button>
-                    </div>
-
-                    <div class="package-card">
-                        <div>
-                            <h3>Arcoíris Completo</h3>
-                            <div class="package-price">₡18,500</div>
-                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:20px;">La experiencia definitiva de estimulación.</p>
-                            <ul class="package-features">
-                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 5 Bolsas de Arena Sensorial (5 kg en total)</li>
-                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Incluye la colección completa de colores</li>
-                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Envío prioritario para eventos</li>
-                            </ul>
-                        </div>
-                        <button class="action-quote-btn" onclick="cotizarProducto('Paquete Arcoíris Completo (₡18,500)')">Seleccionar Paquete</button>
-                    </div>
-                </div>
-
-                <h3 class="faq-title">Preguntas Frecuentes</h3>
-                <div class="faq-container">
-                    <div class="faq-item">
-                        <h4><i class="fa-solid fa-circle-question" style="color:var(--logo-melocoton);"></i> ¿La arena es segura si un niño se la lleva a la boca?</h4>
-                        <p>Sí, la arena está elaborada con ingredientes 100% naturales de grado alimenticio y pigmentos no tóxicos. Aunque tiene un sabor amargo para desalentar su ingesta, es completamente segura.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h4><i class="fa-solid fa-circle-question" style="color:var(--logo-lila);"></i> ¿Cómo se recomienda almacenar para que dure más tiempo?</h4>
-                        <p>Manténla resguardada en su empaque hermético original o en un contenedor bien cerrado después de jugar, guardada en un espacio fresco y libre de humedad directa.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 5: CONTACTO ================= -->
+        <!-- CONTACTO -->
         <section id="contacto">
             <div class="luxury-contact-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton); font-size: 2.2rem;">Planifiquemos un Día Inolvidable</h2>
@@ -478,20 +477,17 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 6: PANEL ADMIN PROTEGIDO E INTEGRADO ================= -->
+        <!-- PANEL ADMIN PROTEGIDO -->
         <section id="adminPanel">
             <div class="safe-scroll-wrapper">
                 
-                <!-- Tarjeta de Login -->
                 <div class="admin-auth-card" id="authCard">
                     <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--text-dark);"></i>
                     <h3 style="font-family: var(--font-display); margin-top: 15px;">Acceso Privado Staff</h3>
-                    <p style="font-size: 0.9rem; opacity: 0.7;">Digita el código maestro para modificar el inventario.</p>
                     <input type="password" class="pin-input" id="adminPin" maxlength="4" placeholder="••••" oninput="verificarPin()">
-                    <div id="loginError" style="color: #c94c4c; font-size: 0.85rem; font-weight: bold; display: none;">Código incorrecto. Inténtalo de nuevo.</div>
+                    <div id="loginError" style="color: #c94c4c; font-size: 0.85rem; font-weight: bold; display: none;">Código incorrecto.</div>
                 </div>
 
-                <!-- Consola Extendida del Administrador -->
                 <div class="admin-dashboard" id="adminDashboard">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg-cream); padding-bottom: 15px;">
                         <h3 style="font-family: var(--font-display); font-size: 1.8rem;"><i class="fa-solid fa-boxes-stacked"></i> Consola Central Camemani</h3>
@@ -499,7 +495,7 @@
                     </div>
 
                     <div class="admin-grid-panels">
-                        <!-- Panel de Control de Inventario Actual -->
+                        <!-- Lista de Inventario Completa -->
                         <div>
                             <h4 style="font-family: var(--font-display); margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Stock en Tiempo Real</h4>
                             <table class="inventory-manager-table">
@@ -511,8 +507,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- Fila Fija del Producto Principal -->
                                     <tr>
-                                        <td><strong>Arena Sensorial (1kg)</strong></td>
+                                        <td><strong>Arena Sensorial (1kg)</strong><br><small style="opacity:0.6;">Colección Base</small></td>
                                         <td id="adminStockStatus">Sincronizando...</td>
                                         <td style="text-align: center; white-space: nowrap;">
                                             <button class="qty-control-btn" onclick="modificarStock(-1)">-</button>
@@ -521,10 +518,14 @@
                                         </td>
                                     </tr>
                                 </tbody>
+                                <!-- AQUÍ SE INSERTAN AUTOMÁTICAMENTE LOS NUEVOS PRODUCTOS DE FIREBASE -->
+                                <tbody id="dynamicProductsTableBody">
+                                    <tr><td colspan="3" style="text-align:center; opacity:0.5;">Cargando catálogo extendido...</td></tr>
+                                </tbody>
                             </table>
                         </div>
 
-                        <!-- Formulario para Agregar Nuevos Productos a Firebase -->
+                        <!-- Formulario para Agregar -->
                         <div class="add-product-form-box">
                             <h4><i class="fa-solid fa-circle-plus" style="color: var(--logo-melocoton);"></i> Agregar Producto</h4>
                             <form id="formNuevoProducto" onsubmit="agregarNuevoProducto(event)">
@@ -575,7 +576,7 @@
 
         function cotizarProducto(nombreProducto) {
             document.getElementById('eventDetails').value = `Me interesa obtener más información y cotizar: ${nombreProducto}.`;
-            slideTo(4); // Se mueve a la sección de Contacto (ahora es el índice 4)
+            slideTo(4); 
             setTimeout(() => { document.getElementById('clientName').focus(); }, 750);
         }
 
