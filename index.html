@@ -5,20 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
+    <!-- Fuentes e Iconos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Conexión en Tiempo Real con Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Credenciales extraídas exactamente de tu consola de Firebase (image_7f6cf7.png)
         const firebaseConfig = {
             apiKey: "AIzaSyBz7tzJ_LxWMVoEcw9C5uWC_spd2Nq4APc",
             authDomain: "camemani.firebaseapp.com",
-            databaseURL: "https://camemani-default-rtdb.firebaseio.com", // URL por defecto de tu Realtime Database
+            databaseURL: "https://camemani-default-rtdb.firebaseio.com", 
             projectId: "camemani",
             storageBucket: "camemani.firebasestorage.app",
             messagingSenderId: "528750051571",
@@ -26,7 +27,6 @@
             measurementId: "G-CGLVVB67C5"
         };
 
-        // Inicializar Firebase y el nodo de inventario
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const stockRef = ref(db, 'inventario/arena_sensorial');
@@ -34,10 +34,8 @@
         const MASTER_PIN = "2026"; 
         let inventarioArena = 0;
 
-        // Escucha activa en la nube: actualiza instantáneamente clientes y admin
         onValue(stockRef, (snapshot) => {
             const data = snapshot.val();
-            // Si la base de datos está vacía al inicio, asume 12 unidades por defecto
             inventarioArena = data !== null ? parseInt(data) : 12;
             actualizarInterfazStock(inventarioArena);
         });
@@ -46,7 +44,6 @@
             const publicBadge = document.getElementById('publicStockBadge');
             const btnCotizar = document.getElementById('btnCotizarArena');
 
-            // Actualización del badge público en la Boutique
             if (stock <= 0) {
                 publicBadge.className = "stock-badge";
                 publicBadge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Agotado temporalmente`;
@@ -61,7 +58,6 @@
                 if(btnCotizar) btnCotizar.innerText = "Cotizar Bolsas de Arena";
             }
 
-            // Actualización de la consola interna del Administrador
             const adminQty = document.getElementById('adminStockQty');
             const adminStatus = document.getElementById('adminStockStatus');
             if (adminQty) adminQty.innerText = stock;
@@ -72,11 +68,10 @@
             }
         }
 
-        // Exponer funciones globales para los clics en los elementos HTML
         window.modificarStock = function(cambio) {
             let nuevoStock = inventarioArena + cambio;
             if (nuevoStock < 0) nuevoStock = 0;
-            set(stockRef, nuevoStock); // Guarda en la nube de Firebase
+            set(stockRef, nuevoStock);
         }
 
         window.verificarPin = function() {
@@ -118,12 +113,10 @@
             overflow: hidden; 
         }
 
-        /* Contenedor del Slider Horizontal */
         .window-slider {
             display: flex; width: 100vw; height: 100vh;
             overflow-x: auto; overflow-y: hidden;
             scroll-behavior: smooth; scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
         }
         .window-slider::-webkit-scrollbar { display: none; }
 
@@ -135,9 +128,8 @@
             overflow-y: auto; overflow-x: hidden; scroll-snap-align: start; 
         }
 
-        .safe-scroll-wrapper { margin: auto 0; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1200px; }
+        .safe-scroll-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1100px; padding-bottom: 50px; }
 
-        /* --- BOTÓN VOLVER FLOTANTE --- */
         .home-anchor-btn {
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: white; padding: 10px 24px; border-radius: 30px;
@@ -148,20 +140,13 @@
         }
         .home-anchor-btn.visible { transform: translateX(-50%) translateY(0); }
 
-        /* --- SECCIÓN 1: HOME --- */
+        /* --- S1: HOME --- */
         #home { background: radial-gradient(circle at center, #ffffff 0%, var(--bg-cream) 100%); }
-        .center-universe { text-align: center; max-width: 750px; z-index: 10; margin: auto 0; }
-        .main-brand-logo { margin-bottom: 25px; display: flex; justify-content: center; }
-        .main-brand-logo img { width: 100%; max-width: 420px; height: auto; }
+        .center-universe { text-align: center; max-width: 750px; margin: auto 0; z-index: 10; }
+        .main-brand-logo img { width: 100%; max-width: 420px; height: auto; margin-bottom: 25px; }
         .brand-pitch { font-size: 1.15rem; font-weight: 500; max-width: 580px; margin: 15px auto 40px auto; line-height: 1.6; opacity: 0.85; }
-
-        .luxury-menu-grid { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
-        .menu-sphere-btn {
-            background: transparent; padding: 12px 24px; border-radius: 30px;
-            font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600;
-            color: var(--text-dark); cursor: pointer; transition: all 0.3s ease;
-            display: flex; align-items: center; gap: 8px; border: 1.5px solid transparent;
-        }
+        .luxury-menu-grid { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .menu-sphere-btn { background: transparent; padding: 12px 24px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600; color: var(--text-dark); cursor: pointer; transition: all 0.3s ease; border: 1.5px solid transparent; }
         .menu-sphere-btn.btn-alquiler { border-color: var(--logo-lila); }
         .menu-sphere-btn.btn-boutique { border-color: var(--logo-melocoton); }
         .menu-sphere-btn.btn-contacto { border-color: var(--logo-celeste); }
@@ -169,19 +154,13 @@
         .menu-sphere-btn:hover { background: var(--text-dark); color: white; transform: translateY(-2px); }
 
         .section-title { font-family: var(--font-display); font-size: 3rem; margin-bottom: 15px; text-align: center; }
-        .section-subtitle { font-size: 1.1rem; max-width: 600px; text-align: center; margin-bottom: 30px; opacity: 0.8; }
+        .section-subtitle { font-size: 1.1rem; max-width: 600px; text-align: center; margin-bottom: 40px; opacity: 0.8; }
 
-        /* --- DISPLAY DE STOCK PÚBLICO (BOUTIQUE) --- */
-        .stock-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; background: #fdf2f2; color: #c94c4c;
-            border-radius: 30px; font-size: 0.85rem; font-weight: 700;
-            margin-bottom: 15px; width: fit-content;
-        }
+        /* --- S3: BOUTIQUE DETALLADA --- */
+        .stock-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: #fdf2f2; color: #c94c4c; border-radius: 30px; font-size: 0.85rem; font-weight: 700; margin-bottom: 15px; width: fit-content; }
         .stock-badge.in-stock { background: #f2fdf4; color: #4cc970; }
 
-        /* Diseño de la Ficha de Producto */
-        .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; max-width: 1050px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); }
+        .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); margin-bottom: 40px; }
         .boutique-gallery-pane { min-height: 450px; background-size: cover; background-position: center; }
         .boutique-content-pane { padding: 40px 50px; display: flex; flex-direction: column; justify-content: center; }
         
@@ -190,27 +169,36 @@
         .meta-column ul { list-style: none; }
         .meta-column ul li { font-size: 0.9rem; margin-bottom: 8px; opacity: 0.8; display: flex; align-items: center; gap: 6px; }
 
-        .action-quote-btn {
-            background: transparent; border: 1.5px solid var(--text-dark); color: var(--text-dark);
-            padding: 12px 20px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.9rem;
-            font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s;
-        }
+        /* Estilos de los Colores */
+        .color-showcase-title { font-family: var(--font-display); font-size: 1.8rem; margin: 30px 0 20px 0; text-align: center; width: 100%; }
+        .colors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 100%; margin-bottom: 5px; }
+        .color-card { background: white; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.01); border-top: 5px solid transparent; }
+        .color-card h4 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px; }
+        .color-card p { font-size: 0.85rem; opacity: 0.8; line-height: 1.4; }
+
+        /* Estilos de los Paquetes */
+        .packages-title { font-family: var(--font-display); font-size: 1.8rem; margin: 40px 0 20px 0; text-align: center; width: 100%; }
+        .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; margin-bottom: 5px; }
+        .package-card { background: white; padding: 35px 25px; border-radius: 30px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
+        .package-card.featured { border-color: var(--logo-melocoton); }
+        .package-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--logo-melocoton); color: white; padding: 4px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .package-card h3 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 10px; }
+        .package-price { font-family: var(--font-display); font-size: 2rem; color: var(--text-dark); margin-bottom: 15px; }
+        .package-features { list-style: none; margin-bottom: 25px; text-align: left; padding: 0 10px; }
+        .package-features li { font-size: 0.9rem; margin-bottom: 10px; opacity: 0.85; display: flex; align-items: center; gap: 8px; }
+
+        /* Preguntas Frecuentes */
+        .faq-title { font-family: var(--font-display); font-size: 1.8rem; margin: 40px 0 20px 0; text-align: center; width: 100%; }
+        .faq-container { width: 100%; max-width: 800px; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.02); }
+        .faq-item { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f5ede6; }
+        .faq-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .faq-item h4 { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 8px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
+        .faq-item p { font-size: 0.9rem; opacity: 0.8; line-height: 1.5; }
+
+        .action-quote-btn { background: transparent; border: 1.5px solid var(--text-dark); color: var(--text-dark); padding: 12px 20px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s; }
         .action-quote-btn:hover { background: var(--text-dark); color: white; }
 
-        /* --- PANEL DE ADMINISTRACIÓN --- */
-        .admin-auth-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); text-align: center; max-width: 400px; width: 100%; margin: auto; }
-        .pin-input { width: 100%; text-align: center; font-size: 2rem; letter-spacing: 10px; padding: 10px; border-radius: 15px; border: 2px solid var(--logo-lila); outline: none; margin: 20px 0; font-family: var(--font-display); }
-        
-        .admin-dashboard { display: none; width: 100%; max-width: 900px; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
-        .inventory-manager-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
-        .inventory-manager-table th, .inventory-manager-table td { padding: 15px; border-bottom: 1px solid #f0e9e2; }
-        .inventory-manager-table th { font-family: var(--font-display); color: var(--text-dark); }
-        
-        .qty-control-btn { background: var(--bg-cream); border: 1px solid #ddd; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; }
-        .qty-control-btn:hover { background: var(--text-dark); color: white; }
-        .qty-display { font-size: 1.1rem; font-weight: 700; width: 40px; display: inline-block; text-align: center; }
-
-        /* --- FORMULARIO DE CONTACTO --- */
+        /* --- S4: CONTACTO --- */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; margin: auto 0; }
         .form-row { margin-bottom: 20px; }
         .form-row label { display: block; font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 8px; }
@@ -218,7 +206,18 @@
         .btn-luxury-submit { width: 100%; background: var(--logo-melocoton); color: white; border: none; padding: 16px; border-radius: 50px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-luxury-submit:hover { background: var(--text-dark); }
 
-        /* Identificadores de color por sección */
+        /* --- S5: ADMIN PANEL --- */
+        .admin-auth-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); text-align: center; max-width: 400px; width: 100%; margin: auto; }
+        .pin-input { width: 100%; text-align: center; font-size: 2rem; letter-spacing: 10px; padding: 10px; border-radius: 15px; border: 2px solid var(--logo-lila); outline: none; margin: 20px 0; font-family: var(--font-display); }
+        .admin-dashboard { display: none; width: 100%; max-width: 900px; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        .inventory-manager-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        .inventory-manager-table th, .inventory-manager-table td { padding: 15px; border-bottom: 1px solid #f0e9e2; }
+        .inventory-manager-table th { font-family: var(--font-display); color: var(--text-dark); }
+        .qty-control-btn { background: var(--bg-cream); border: 1px solid #ddd; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; }
+        .qty-control-btn:hover { background: var(--text-dark); color: white; }
+        .qty-display { font-size: 1.1rem; font-weight: 700; width: 40px; display: inline-block; text-align: center; }
+
+        /* Identificadores de color */
         #home { background-color: var(--bg-cream); }
         #alquiler { background-color: #f7f3fb; }
         #boutique { background-color: #fffaf7; }
@@ -229,18 +228,19 @@
             .split-boutique-container { grid-template-columns: 1fr; }
             .boutique-gallery-pane { min-height: 250px; }
             .boutique-content-pane { padding: 30px; }
-            .product-meta-list { grid-template-columns: 1fr; gap: 15px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Botón Volver Flotante -->
     <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
         <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
     </div>
 
     <div class="window-slider" id="mainSlider">
         
+        <!-- ================= SECCIÓN 1: HOME ================= -->
         <section id="home">
             <div class="center-universe">
                 <div class="main-brand-logo">
@@ -256,6 +256,7 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 2: ALQUILER ================= -->
         <section id="alquiler">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-lila);">Espacios Montessori</h2>
@@ -263,14 +264,15 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 3: BOUTIQUE DETALLADA ================= -->
         <section id="boutique">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
                 <p class="section-subtitle">"Para explorar, crear y jugar sin límites."</p>
                 
+                <!-- Ficha Principal de Producto -->
                 <div class="split-boutique-container">
                     <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
-                    
                     <div class="boutique-content-pane">
                         <div id="publicStockBadge" class="stock-badge">
                             <i class="fa-solid fa-box-open"></i> Sincronizando disponibilidad...
@@ -302,12 +304,103 @@
                             <i class="fa-solid fa-weight-hanging"></i> CONTENIDO NETO: 1 KG
                         </div>
                         
-                        <button class="action-quote-btn" id="btnCotizarArena" onclick="cotizarProducto('Bolsas de Arena Sensorial (1kg)')">Cotizar Bolsas de Arena</button>
+                        <button class="action-quote-btn" id="btnCotizarArena" onclick="cotizarProducto('Bolsas de Arena Sensorial Individuales')">Cotizar Bolsas de Arena</button>
                     </div>
                 </div>
+
+                <!-- SECCIÓN DETALLE DE COLORES -->
+                <h3 class="color-showcase-title" style="color: var(--logo-lila);">La Magia Detrás de Cada Color</h3>
+                <div class="colors-grid">
+                    <div class="color-card" style="border-top-color: var(--logo-lila);">
+                        <h4>Calma Lila</h4>
+                        <p>Inspirado en campos de lavanda. Promueve estados de relajación, disminuye la ansiedad y guía el enfoque hacia una exploración serena y pacífica.</p>
+                    </div>
+                    <div class="color-card" style="border-top-color: var(--logo-melocoton);">
+                        <h4>Energía Melocotón</h4>
+                        <p>Un tono cálido y acogedor que estimula sutilmente la comunicación y el entusiasmo, invitando al niño a compartir sus historias y mundos imaginados.</p>
+                    </div>
+                    <div class="color-card" style="border-top-color: var(--logo-amarillo);">
+                        <h4>Destello Amarillo</h4>
+                        <p>Representa la luz del sol y el despertar intelectual. Activa las zonas creativas del cerebro, estimulando la curiosidad innata y el pensamiento lógico.</p>
+                    </div>
+                    <div class="color-card" style="border-top-color: var(--logo-rosa);">
+                        <h4>Dulzura Rosa</h4>
+                        <p>Evoca ternura, afecto y empatía. Crea un ambiente seguro que fomenta la amabilidad, la autoexpresión y el juego cooperativo y armonioso.</p>
+                    </div>
+                    <div class="color-card" style="border-top-color: var(--logo-celeste);">
+                        <h4>Frescura Celeste</h4>
+                        <p>Evoca la inmensidad del cielo y el mar. Invita a la concentración profunda, estabiliza el ritmo del juego y estimula una sensación de libertad mental.</p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE PAQUETES COMERCIALES -->
+                <h3 class="packages-title" style="color: var(--logo-melocoton);">Elige tu Paquete Ideal</h3>
+                <div class="packages-grid">
+                    <div class="package-card">
+                        <div>
+                            <h3>Explorador Individual</h3>
+                            <div class="package-price">₡4,500</div>
+                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:20px;">Perfecto para iniciar el viaje táctil.</p>
+                            <ul class="package-features">
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 1 Bolsa de Arena Sensorial (1 kg)</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Color premium a elegir</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Empaque hermético reutilizable</li>
+                            </ul>
+                        </div>
+                        <button class="action-quote-btn" onclick="cotizarProducto('Paquete Explorador Individual (₡4,500)')">Seleccionar Paquete</button>
+                    </div>
+
+                    <div class="package-card featured">
+                        <div class="package-badge">El más querido</div>
+                        <div>
+                            <h3>Dúo Creativo</h3>
+                            <div class="package-price">₡8,000</div>
+                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:20px;">Ideal para contrastar e integrar texturas.</p>
+                            <ul class="package-features">
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 2 Bolsas de Arena Sensorial (2 kg en total)</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Mezcla 2 colores favoritos</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Tarjeta con sugerencias de juego guiado</li>
+                            </ul>
+                        </div>
+                        <button class="action-quote-btn" style="background:var(--text-dark); color:white;" onclick="cotizarProducto('Paquete Dúo Creativo (₡8,000)')">Seleccionar Paquete</button>
+                    </div>
+
+                    <div class="package-card">
+                        <div>
+                            <h3>Arcoíris Completo</h3>
+                            <div class="package-price">₡18,500</div>
+                            <p style="font-size:0.85rem; opacity:0.7; margin-bottom:20px;">La experiencia definitiva de estimulación.</p>
+                            <ul class="package-features">
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> 5 Bolsas de Arena Sensorial (5 kg en total)</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Incluye la colección completa de colores</li>
+                                <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Envío prioritario para eventos</li>
+                            </ul>
+                        </div>
+                        <button class="action-quote-btn" onclick="cotizarProducto('Paquete Arcoíris Completo (₡18,500)')">Seleccionar Paquete</button>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE PREGUNTAS FRECUENTES -->
+                <h3 class="faq-title" style="color: var(--text-dark);">Preguntas Frecuentes</h3>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <h4><i class="fa-solid fa-circle-question" style="color:var(--logo-melocoton);"></i> ¿La arena es segura si un niño se la lleva a la boca?</h4>
+                        <p>Sí, nuestra prioridad absoluta es la seguridad. La arena está elaborada con ingredientes 100% naturales de grado alimenticio y pigmentos no tóxicos. Aunque tiene un sabor poco agradable para desalentar su ingesta, es completamente segura frente a accidentes.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4><i class="fa-solid fa-circle-question" style="color:var(--logo-lila);"></i> ¿Cómo se recomienda almacenar para que dure más tiempo?</h4>
+                        <p>Para prolongar la vida útil de tu arena, manténla resguardada en su empaque hermético original o en un contenedor cerrado después de jugar. Asegúrate de guardarla en un espacio fresco, seco y libre de humedad directa.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4><i class="fa-solid fa-circle-question" style="color:var(--logo-celeste);"></i> ¿Mancha la ropa, los manteles o las manos de los niños?</h4>
+                        <p>Para nada. El proceso de curado y fijación del color está diseñado para que los pigmentos permanezcan unidos a la textura de la arena. Las manos y superficies quedarán completamente limpias al terminar la jornada de exploración.</p>
+                    </div>
+                </div>
+
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 4: CONTACTO ================= -->
         <section id="contacto">
             <div class="luxury-contact-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton); font-size: 2.2rem;">Planifiquemos un Día Inolvidable</h2>
@@ -320,9 +413,9 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 5: PANEL ADMIN PROTEGIDO ================= -->
         <section id="adminPanel">
             <div class="safe-scroll-wrapper">
-                
                 <div class="admin-auth-card" id="authCard">
                     <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--text-dark);"></i>
                     <h3 style="font-family: var(--font-display); margin-top: 15px;">Acceso Privado Staff</h3>
@@ -336,7 +429,6 @@
                         <h3 style="font-family: var(--font-display); font-size: 1.8rem;"><i class="fa-solid fa-boxes-stacked"></i> Control de Stock en la Nube</h3>
                         <button class="action-quote-btn" style="width: auto; padding: 6px 15px; font-size: 0.8rem;" onclick="location.reload()">Cerrar Sesión</button>
                     </div>
-
                     <table class="inventory-manager-table">
                         <thead>
                             <tr>
@@ -359,23 +451,21 @@
                     </table>
                     <p style="font-size: 0.85rem; opacity: 0.6; margin-top: 20px; text-align: center;"><i class="fa-solid fa-circle-info"></i> Cada pulsación impacta de inmediato todas las pantallas de los clientes en tiempo real.</p>
                 </div>
-
             </div>
         </section>
 
     </div>
 
+    <!-- Scripts de Navegación Estructural -->
     <script>
         const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
 
-        // Control de desplazamiento por secciones
         function slideTo(sectionIndex) {
             const targetX = sectionIndex * window.innerWidth;
             slider.scrollTo({ left: targetX, behavior: 'smooth' });
         }
 
-        // Mostrar o esconder el botón flotante superior de volver
         slider.addEventListener('scroll', () => {
             if (slider.scrollLeft > (window.innerWidth / 2)) {
                 backHomeBtn.classList.add('visible');
@@ -384,14 +474,12 @@
             }
         });
 
-        // Pasar detalles al formulario automáticamente
         function cotizarProducto(nombreProducto) {
             document.getElementById('eventDetails').value = `Me interesa obtener más información y cotizar: ${nombreProducto}.`;
             slideTo(3);
             setTimeout(() => { document.getElementById('clientName').focus(); }, 750);
         }
 
-        // Disparar mensaje a WhatsApp
         function sendToWhatsApp(event) {
             event.preventDefault();
             const name = document.getElementById('clientName').value;
