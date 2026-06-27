@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
-    <!-- Fuentes e Iconos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Conexión en Tiempo Real con Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBz7tzJ_LxWMVoEcw9C5uWC_spd2Nq4APc",
@@ -37,46 +35,102 @@
         const MASTER_PIN = "2026"; 
         let inventarioArena = 0;
 
-        // Escuchar el producto base (Arena Sensorial)
+        // 1. Escuchar el producto base (Arena Sensorial)
         onValue(stockRef, (snapshot) => {
             const data = snapshot.val();
             inventarioArena = data !== null ? parseInt(data) : 12;
             actualizarInterfazStock(inventarioArena);
         });
 
-        // ESCUCHAR NUEVOS PRODUCTOS DINÁMICOS EN EL ADMIN
+        // 2. ESCUCHAR Y RENDERIZAR EN VIVO (CLIENTE Y ADMIN)
         onValue(nuevosProductosRef, (snapshot) => {
             const tbody = document.getElementById('dynamicProductsTableBody');
-            if (!tbody) return;
+            const contenedorParquesCliente = document.getElementById('dynamicParksGrid');
+            const contenedorPaquetesCliente = document.getElementById('dynamicPackagesGrid');
             
-            // Limpiar la tabla antes de renderizar
-            tbody.innerHTML = '';
+            // Limpiar contenedores antes de renderizar cambios
+            if (tbody) tbody.innerHTML = '';
+            if (contenedorParquesCliente) contenedorParquesCliente.innerHTML = '';
+            if (contenedorPaquetesCliente) contenedorPaquetesCliente.innerHTML = '';
             
             const data = snapshot.val();
             if (data) {
-                // Iterar sobre cada producto guardado en Firebase
                 Object.keys(data).forEach((id) => {
                     const producto = data[id];
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>
-                            <strong>${producto.nombre}</strong><br>
-                            <small style="opacity: 0.6;">${producto.categoria}</small>
-                        </td>
-                        <td><span style="color:#4cc970; font-weight:bold;">Guardado en Cloud</span></td>
-                        <td style="text-align: center; white-space: nowrap;">
-                            <button class="qty-control-btn" onclick="modificarStockDinamico('${id}', -1, ${producto.stock})">-</button>
-                            <span class="qty-display">${producto.stock}</span>
-                            <button class="qty-control-btn" onclick="modificarStockDinamico('${id}', 1, ${producto.stock})">+</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                    
+                    // --- A. RENDERIZAR EN TABLA DE ADMIN ---
+                    if (tbody) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>
+                                <strong>${producto.nombre}</strong><br>
+                                <small style="opacity: 0.6; text-transform: uppercase; font-size:0.75rem;">${producto.categoria}</small>
+                            </td>
+                            <td><span style="color:#4cc970; font-weight:bold;">Público en Web</span></td>
+                            <td style="text-align: center; white-space: nowrap;">
+                                <button class="qty-control-btn" onclick="modificarStockDinamico('${id}', -1, ${producto.stock})">-</button>
+                                <span class="qty-display">${producto.stock}</span>
+                                <button class="qty-control-btn" onclick="modificarStockDinamico('${id}', 1, ${producto.stock})">+</button>
+                                <button class="delete-product-btn" onclick="eliminarProductoDinamico('${id}')" title="Eliminar Producto" style="margin-left: 10px;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+
+                    // --- B. RENDERIZAR EN LA VISTA PÚBLICA DEL CLIENTE ---
+                    // Generamos el badge de stock para el cliente en vivo
+                    let badgeStockCliente = `<span style="color:#4cc970; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Disponible (${producto.stock} uds)</span>`;
+                    if (producto.stock <= 0) {
+                        badgeStockCliente = `<span style="color:#c94c4c; font-weight:600;"><i class="fa-solid fa-circle-xmark"></i> Agotado temporalmente</span>`;
+                    }
+
+                    if (producto.categoria === 'Parques' && contenedorParquesCliente) {
+                        const card = document.createElement('div');
+                        card.className = "park-card";
+                        card.innerHTML = `
+                            <div class="park-img-pane" style="background-color: #f0f4f8; display:flex; align-items:center; justify-content:center;">
+                                <i class="fa-solid fa-cubes" style="font-size:3rem; color:var(--logo-lila); opacity:0.5;"></i>
+                            </div>
+                            <div class="park-body-pane">
+                                <div>
+                                    <div style="font-size:0.85rem; margin-bottom:5px;">${badgeStockCliente}</div>
+                                    <h3>${producto.nombre}</h3>
+                                    <p>Propuesta exclusiva añadida por el staff. Mobiliario estético y ambiente controlado para celebraciones de alto nivel.</p>
+                                </div>
+                                <button class="action-quote-btn" onclick="cotizarProducto('${producto.nombre} (Alquiler de Parques)')">Cotizar este Rincón</button>
+                            </div>
+                        `;
+                        contenedorParquesCliente.appendChild(card);
+                    } 
+                    
+                    else if (producto.categoria === 'Kits' && contenedorPaquetesCliente) {
+                        const card = document.createElement('div');
+                        card.className = "package-card";
+                        card.innerHTML = `
+                            <div>
+                                <div style="font-size:0.85rem; margin-bottom:10px;">${badgeStockCliente}</div>
+                                <h3>${producto.nombre}</h3>
+                                <div class="package-price" style="font-size:1.6rem; margin: 10px 0;">Consultar Precio</div>
+                                <ul class="package-features">
+                                    <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Configuración personalizada</li>
+                                    <li><i class="fa-solid fa-check" style="color:#4cc970;"></i> Material orgánico garantizado</li>
+                                </ul>
+                            </div>
+                            <button class="action-quote-btn" onclick="cotizarProducto('${producto.nombre} (Paquete Especial)')">Seleccionar Opción</button>
+                        `;
+                        contenedorPaquetesCliente.appendChild(card);
+                    }
                 });
             } else {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; opacity:0.5; font-size:0.9rem;">No has agregado productos personalizados aún.</td></tr>`;
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; opacity:0.5; font-size:0.9rem;">No has agregado productos personalizados aún.</td></tr>`;
+                }
             }
         });
 
+        // Actualizar UI del producto estático (Arena Sensorial)
         function actualizarInterfazStock(stock) {
             const publicBadge = document.getElementById('publicStockBadge');
             const btnCotizar = document.getElementById('btnCotizarArena');
@@ -111,12 +165,24 @@
             set(stockRef, nuevoStock);
         }
 
-        // Modificar el stock de los productos que agregues tú de forma dinámica
+        // Modificar stock dinámico
         window.modificarStockDinamico = function(id, cambio, stockActual) {
             let nuevoStock = stockActual + cambio;
             if (nuevoStock < 0) nuevoStock = 0;
             const itemRef = ref(db, `inventario/nuevos_productos/${id}/stock`);
             set(itemRef, nuevoStock);
+        }
+
+        // NUEVA FUNCIÓN: ELIMINAR / BASURERO EN LÍNEA
+        window.eliminarProductoDinamico = function(id) {
+            if(confirm("¿Estás seguro de que deseas eliminar este producto permanentemente de la web?")) {
+                const itemRef = ref(db, `inventario/nuevos_productos/${id}`);
+                remove(itemRef).then(() => {
+                    alert("Producto removido del catálogo.");
+                }).catch((error) => {
+                    alert("Error al eliminar: " + error.message);
+                });
+            }
         }
 
         window.verificarPin = function() {
@@ -134,7 +200,7 @@
             }
         }
 
-        // Registrar físicamente en Firebase
+        // Enviar a Firebase
         window.agregarNuevoProducto = function(event) {
             event.preventDefault();
             const nombre = document.getElementById('newProdName').value;
@@ -206,7 +272,7 @@
         }
         .home-anchor-btn.visible { transform: translateX(-50%) translateY(0); }
 
-        /* --- S1: HOME --- */
+        /* S1: HOME */
         #home { background: radial-gradient(circle at center, #ffffff 0%, var(--bg-cream) 100%); }
         .center-universe { text-align: center; max-width: 850px; margin: auto 0; z-index: 10; }
         .main-brand-logo img { width: 100%; max-width: 420px; height: auto; margin-bottom: 25px; }
@@ -224,7 +290,7 @@
         .section-title { font-family: var(--font-display); font-size: 3rem; margin-bottom: 15px; text-align: center; }
         .section-subtitle { font-size: 1.1rem; max-width: 600px; text-align: center; margin-bottom: 40px; opacity: 0.8; }
 
-        /* --- S2: ALQUILER DE PARQUES --- */
+        /* S2: ALQUILER DE PARQUES */
         .parks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; width: 100%; margin-top: 10px; }
         .park-card { background: white; border-radius: 35px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
         .park-img-pane { height: 240px; background-size: cover; background-position: center; position: relative; }
@@ -233,7 +299,7 @@
         .park-body-pane h3 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 10px; color: var(--text-dark); }
         .park-body-pane p { font-size: 0.9rem; opacity: 0.8; line-height: 1.5; margin-bottom: 20px; }
 
-        /* --- S3: BOUTIQUE (ARENA SENSORIAL) --- */
+        /* S3: BOUTIQUE */
         .stock-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: #fdf2f2; color: #c94c4c; border-radius: 30px; font-size: 0.85rem; font-weight: 700; margin-bottom: 15px; width: fit-content; }
         .stock-badge.in-stock { background: #f2fdf4; color: #4cc970; }
         .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); margin-bottom: 40px; }
@@ -244,14 +310,7 @@
         .meta-column ul { list-style: none; }
         .meta-column ul li { font-size: 0.9rem; margin-bottom: 8px; opacity: 0.8; display: flex; align-items: center; gap: 6px; }
 
-        /* Colores */
-        .color-showcase-title { font-family: var(--font-display); font-size: 1.8rem; margin: 30px 0 20px 0; text-align: center; width: 100%; }
-        .colors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 100%; margin-bottom: 5px; }
-        .color-card { background: white; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.01); border-top: 5px solid transparent; }
-        .color-card h4 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px; }
-        .color-card p { font-size: 0.85rem; opacity: 0.8; line-height: 1.4; }
-
-        /* --- S4: PAQUETES --- */
+        /* S4: PAQUETES */
         .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; margin-top: 10px; }
         .package-card { background: white; padding: 40px 30px; border-radius: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
         .package-card.featured { border-color: var(--logo-melocoton); }
@@ -261,18 +320,10 @@
         .package-features { list-style: none; margin-bottom: 30px; text-align: left; padding: 0 10px; }
         .package-features li { font-size: 0.95rem; margin-bottom: 12px; opacity: 0.85; display: flex; align-items: center; gap: 10px; }
 
-        /* FAQ */
-        .faq-title { font-family: var(--font-display); font-size: 1.8rem; margin: 50px 0 20px 0; text-align: center; width: 100%; }
-        .faq-container { width: 100%; max-width: 850px; background: white; padding: 35px; border-radius: 35px; box-shadow: 0 15px 40px rgba(0,0,0,0.02); }
-        .faq-item { margin-bottom: 22px; padding-bottom: 22px; border-bottom: 1px solid #f5ede6; }
-        .faq-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .faq-item h4 { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 10px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
-        .faq-item p { font-size: 0.9rem; opacity: 0.8; line-height: 1.5; }
-
         .action-quote-btn { background: transparent; border: 1.5px solid var(--text-dark); color: var(--text-dark); padding: 12px 20px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s; }
         .action-quote-btn:hover { background: var(--text-dark); color: white; }
 
-        /* --- S5: CONTACTO --- */
+        /* S5: CONTACTO */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; margin: auto 0; }
         .form-row { margin-bottom: 20px; }
         .form-row label { display: block; font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 8px; }
@@ -280,7 +331,7 @@
         .btn-luxury-submit { width: 100%; background: var(--logo-melocoton); color: white; border: none; padding: 16px; border-radius: 50px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-luxury-submit:hover { background: var(--text-dark); }
 
-        /* --- S6: PANEL ADMIN --- */
+        /* S6: PANEL ADMIN */
         .admin-auth-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); text-align: center; max-width: 400px; width: 100%; margin: auto; }
         .pin-input { width: 100%; text-align: center; font-size: 2rem; letter-spacing: 10px; padding: 10px; border-radius: 15px; border: 2px solid var(--logo-lila); outline: none; margin: 20px 0; font-family: var(--font-display); }
         
@@ -290,9 +341,12 @@
         .inventory-manager-table { width: 100%; border-collapse: collapse; text-align: left; }
         .inventory-manager-table th, .inventory-manager-table td { padding: 15px; border-bottom: 1px solid #f0e9e2; }
         .inventory-manager-table th { font-family: var(--font-display); color: var(--text-dark); }
-        .qty-control-btn { background: var(--bg-cream); border: 1px solid #ddd; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; }
+        .qty-control-btn { background: var(--bg-cream); border: 1px solid #ddd; width: 32px; height: 32px; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 1rem; transition: all 0.2s; }
         .qty-control-btn:hover { background: var(--text-dark); color: white; }
-        .qty-display { font-size: 1.1rem; font-weight: 700; width: 40px; display: inline-block; text-align: center; }
+        .qty-display { font-size: 1.1rem; font-weight: 700; width: 35px; display: inline-block; text-align: center; }
+        
+        .delete-product-btn { background: #fdf2f2; color: #c94c4c; border: 1px solid #f5c2c2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
+        .delete-product-btn:hover { background: #c94c4c; color: white; border-color: #c94c4c; }
 
         .add-product-form-box { background: var(--bg-cream); padding: 25px; border-radius: 20px; border: 1px dashed var(--logo-lila); height: fit-content; }
         .add-product-form-box h4 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
@@ -314,14 +368,12 @@
 </head>
 <body>
 
-    <!-- Botón Volver Flotante -->
     <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
         <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
     </div>
 
     <div class="window-slider" id="mainSlider">
         
-        <!-- HOME -->
         <section id="home">
             <div class="center-universe">
                 <div class="main-brand-logo">
@@ -338,7 +390,6 @@
             </div>
         </section>
 
-        <!-- ALQUILER DE PARQUES -->
         <section id="alquiler">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-lila);">Parques Infantiles Estéticos</h2>
@@ -371,10 +422,11 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="parks-grid" id="dynamicParksGrid" style="margin-top: 30px;"></div>
             </div>
         </section>
 
-        <!-- BOUTIQUE (ARENA SENSORIAL) -->
         <section id="boutique">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
@@ -395,7 +447,6 @@
                                 <ul>
                                     <li><i class="fa-solid fa-leaf" style="color:#a8dadc;"></i> 100% natural, no tóxica.</li>
                                     <li><i class="fa-solid fa-hands" style="color:#f4a261;"></i> Textura gruesa y agradable.</li>
-                                    <li><i class="fa-solid fa-puzzle-piece" style="color:#e9c46a;"></i> Ideal para estimulación.</li>
                                 </ul>
                             </div>
                             <div class="meta-column">
@@ -403,33 +454,15 @@
                                 <ul>
                                     <li><i class="fa-solid fa-lightbulb"></i> Estimula la creatividad.</li>
                                     <li><i class="fa-solid fa-child"></i> Motricidad fina y calma.</li>
-                                    <li><i class="fa-solid fa-users"></i> Fomenta el juego libre.</li>
                                 </ul>
                             </div>
                         </div>
                         <button class="action-quote-btn" id="btnCotizarArena" onclick="cotizarProducto('Bolsas de Arena Sensorial Individuales')">Cotizar Bolsas de Arena</button>
                     </div>
                 </div>
-
-                <h3 class="color-showcase-title" style="color: var(--logo-lila);">La Magia Detrás de Cada Color</h3>
-                <div class="colors-grid">
-                    <div class="color-card" style="border-top-color: var(--logo-lila);">
-                        <h4>Calma Lila</h4>
-                        <p>Inspirado en campos de lavanda. Promueve estados de relajación y guía el enfoque hacia una exploración serena.</p>
-                    </div>
-                    <div class="color-card" style="border-top-color: var(--logo-melocoton);">
-                        <h4>Energía Melocotón</h4>
-                        <p>Un tono cálido y acogedor que estimula sutilmente la comunicación y la creatividad en sus mundos imaginados.</p>
-                    </div>
-                    <div class="color-card" style="border-top-color: var(--logo-amarillo);">
-                        <h4>Destello Amarillo</h4>
-                        <p>Representa la luz del sol. Activa las zonas creativas de la curiosidad innata y el pensamiento lógico.</p>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <!-- PAQUETES -->
         <section id="paquetes">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-amarillo);">Kits y Paquetes de Regalo</h2>
@@ -461,10 +494,11 @@
                         <button class="action-quote-btn" style="background:var(--text-dark); color:white;" onclick="cotizarProducto('Paquete Dúo Creativo (₡8,000)')">Seleccionar Paquete</button>
                     </div>
                 </div>
+
+                <div class="packages-grid" id="dynamicPackagesGrid" style="margin-top: 30px;"></div>
             </div>
         </section>
 
-        <!-- CONTACTO -->
         <section id="contacto">
             <div class="luxury-contact-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton); font-size: 2.2rem;">Planifiquemos un Día Inolvidable</h2>
@@ -477,7 +511,6 @@
             </div>
         </section>
 
-        <!-- PANEL ADMIN PROTEGIDO -->
         <section id="adminPanel">
             <div class="safe-scroll-wrapper">
                 
@@ -495,7 +528,6 @@
                     </div>
 
                     <div class="admin-grid-panels">
-                        <!-- Lista de Inventario Completa -->
                         <div>
                             <h4 style="font-family: var(--font-display); margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Stock en Tiempo Real</h4>
                             <table class="inventory-manager-table">
@@ -503,11 +535,10 @@
                                     <tr>
                                         <th>Línea</th>
                                         <th>Estado</th>
-                                        <th style="text-align: center;">Cantidad</th>
+                                        <th style="text-align: center;">Cantidad / Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Fila Fija del Producto Principal -->
                                     <tr>
                                         <td><strong>Arena Sensorial (1kg)</strong><br><small style="opacity:0.6;">Colección Base</small></td>
                                         <td id="adminStockStatus">Sincronizando...</td>
@@ -518,14 +549,10 @@
                                         </td>
                                     </tr>
                                 </tbody>
-                                <!-- AQUÍ SE INSERTAN AUTOMÁTICAMENTE LOS NUEVOS PRODUCTOS DE FIREBASE -->
-                                <tbody id="dynamicProductsTableBody">
-                                    <tr><td colspan="3" style="text-align:center; opacity:0.5;">Cargando catálogo extendido...</td></tr>
-                                </tbody>
+                                <tbody id="dynamicProductsTableBody"></tbody>
                             </table>
                         </div>
 
-                        <!-- Formulario para Agregar -->
                         <div class="add-product-form-box">
                             <h4><i class="fa-solid fa-circle-plus" style="color: var(--logo-melocoton);"></i> Agregar Producto</h4>
                             <form id="formNuevoProducto" onsubmit="agregarNuevoProducto(event)">
@@ -534,9 +561,8 @@
                                     <input type="text" id="newProdName" placeholder="Ej: Kit Montessori de Madera" style="padding: 10px; border-radius: 10px;" required>
                                 </div>
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label style="font-size: 0.85rem;">Categoría</label>
+                                    <label style="font-size: 0.85rem;">Categoría Destino en Web</label>
                                     <select id="newProdCategory" style="padding: 10px; border-radius: 10px;">
-                                        <option value="Boutique">Boutique (Arena/Insumos)</option>
                                         <option value="Parques">Alquiler de Parques</option>
                                         <option value="Kits">Kits / Paquetes</option>
                                     </select>
@@ -545,7 +571,7 @@
                                     <label style="font-size: 0.85rem;">Stock de Apertura</label>
                                     <input type="number" id="newProdStock" value="1" min="0" style="padding: 10px; border-radius: 10px;" required>
                                 </div>
-                                <button type="submit" class="btn-luxury-submit" style="padding: 10px; font-size: 0.95rem;">Registrar en Firebase</button>
+                                <button type="submit" class="btn-luxury-submit" style="padding: 10px; font-size: 0.95rem;">Publicar Producto en Vivo</button>
                             </form>
                         </div>
                     </div>
@@ -556,7 +582,6 @@
 
     </div>
 
-    <!-- Scripts de Navegación Estructural -->
     <script>
         const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
