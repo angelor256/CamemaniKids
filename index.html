@@ -5,11 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
-    <!-- Fuentes Elegantes e Infantiles Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // 1. CONFIGURACIÓN DE FIREBASE (Tus amigos cambian esto por sus credenciales)
+        const firebaseConfig = {
+            apiKey: "AIzaSyYourKeyHere_REALTIME_DB",
+            authDomain: "camemani-kids.firebaseapp.com",
+            databaseURL: "https://camemani-kids-default-rtdb.firebaseio.com", // URL de su base de datos
+            projectId: "camemani-kids",
+            storageBucket: "camemani-kids.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:123456:web:abcdef"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const stockRef = ref(db, 'inventario/arena_sensorial');
+
+        // PIN MAESTRO CONFIGURADO
+        const MASTER_PIN = "2026"; 
+        let inventarioArena = 0;
+
+        // 2. ESCUCHA EN TIEMPO REAL (onValue)
+        // Este bloque se ejecuta AUTOMÁTICAMENTE cada vez que el valor cambia en la base de datos de Google.
+        // Actualiza la pantalla de clientes y administradores al mismo tiempo.
+        onValue(stockRef, (snapshot) => {
+            const data = snapshot.val();
+            // Si la base de datos está vacía, inicializa en 10 por defecto
+            inventarioArena = data !== null ? parseInt(data) : 10;
+            actualizarInterfaz(inventarioArena);
+        });
+
+        function actualizarInterfaz(stock) {
+            // Actualizar Vista del Cliente
+            const publicBadge = document.getElementById('publicStockBadge');
+            const btnCotizar = document.getElementById('btnCotizarArena');
+
+            if (stock <= 0) {
+                publicBadge.className = "stock-badge";
+                publicBadge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Agotado temporalmente`;
+                btnCotizar.innerText = "Consultar Próxima Disponibilidad";
+            } else if (stock <= 5) {
+                publicBadge.className = "stock-badge";
+                publicBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ¡Últimas ${stock} unidades disponibles!`;
+                btnCotizar.innerText = "Cotizar Bolsas de Arena";
+            } else {
+                publicBadge.className = "stock-badge in-stock";
+                publicBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Disponible en Stock (${stock} uds)`;
+                btnCotizar.innerText = "Cotizar Bolsas de Arena";
+            }
+
+            // Actualizar Panel Interno del Admin
+            document.getElementById('adminStockQty').innerText = stock;
+            const adminStatus = document.getElementById('adminStockStatus');
+            if (stock <= 0) {
+                adminStatus.innerHTML = `<span style="color:#c94c4c; font-weight:bold;">Sin Stock</span>`;
+            } else {
+                adminStatus.innerHTML = `<span style="color:#4cc970; font-weight:bold;">Activo en Web</span>`;
+            }
+        }
+
+        // Funciones de administración expuestas globalmente para los botones HTML
+        window.modificarStock = function(cambio) {
+            let nuevoStock = inventarioArena + cambio;
+            if (nuevoStock < 0) nuevoStock = 0;
+            
+            // Guarda el nuevo valor en la nube. Al cambiar ahí, gatilla el "onValue" de arriba en todas las pantallas.
+            set(stockRef, nuevoStock);
+        }
+
+        window.verificarPin = function() {
+            const pinInput = document.getElementById('adminPin');
+            const errorText = document.getElementById('loginError');
+            
+            if (pinInput.value === MASTER_PIN) {
+                errorText.style.display = "none";
+                document.getElementById('authCard').style.display = "none";
+                document.getElementById('adminDashboard').style.display = "block";
+                pinInput.value = ""; 
+            } else if (pinInput.value.length === 4) {
+                errorText.style.display = "block";
+                pinInput.value = "";
+            }
+        }
+    </script>
 
     <style>
         :root {
@@ -24,387 +111,233 @@
             --font-sans: 'Quicksand', sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
             font-family: var(--font-sans);
             background-color: var(--bg-cream);
             color: var(--text-dark);
-            height: 100vh;
-            width: 100vw;
+            height: 100vh; width: 100vw;
             overflow: hidden; 
         }
 
-        /* --- CONTENEDOR DESBLOQUEADO CON SCROLL HORIZONTAL NATIVO --- */
         .window-slider {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            overflow-x: auto; 
-            overflow-y: hidden;
-            scroll-behavior: smooth; 
-            scroll-snap-type: x mandatory; 
+            display: flex; width: 100vw; height: 100vh;
+            overflow-x: auto; overflow-y: hidden;
+            scroll-behavior: smooth; scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
-
-        /* Ocultar barra de scroll horizontal estéticamente */
         .window-slider::-webkit-scrollbar { display: none; }
-        .window-slider { -ms-overflow-style: none; scrollbar-width: none; }
 
         section {
-            flex: 0 0 100vw; 
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; 
-            align-items: center;
-            padding: 100px 20px 60px 20px;
-            position: relative;
-            overflow-y: auto; 
-            overflow-x: hidden;
-            scroll-snap-align: start; 
+            flex: 0 0 100vw; width: 100vw; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: flex-start; align-items: center;
+            padding: 100px 20px 60px 20px; position: relative;
+            overflow-y: auto; overflow-x: hidden; scroll-snap-align: start; 
         }
 
-        /* Contenedor seguro para centrar contenido sin romper el scroll en pantallas pequeñas */
-        .safe-scroll-wrapper {
-            margin: auto 0; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 1200px;
-        }
+        .safe-scroll-wrapper { margin: auto 0; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1200px; }
 
         /* --- SECCIÓN 1: HOME --- */
         #home { background: radial-gradient(circle at center, #ffffff 0%, var(--bg-cream) 100%); }
         .center-universe { text-align: center; max-width: 750px; z-index: 10; margin: auto 0; }
-        
-        .main-brand-logo {
-            margin-bottom: 25px;
-            cursor: pointer;
-            animation: float-logo 4.5s ease-in-out infinite alternate;
-            display: flex;
-            justify-content: center;
-        }
-        .main-brand-logo img { width: 100%; max-width: 420px; height: auto; object-fit: contain; }
-
-        @keyframes float-logo {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(-0.5deg); }
-            100% { transform: translateY(-22px) rotate(0.8deg); }
-        }
-
+        .main-brand-logo { margin-bottom: 25px; display: flex; justify-content: center; }
+        .main-brand-logo img { width: 100%; max-width: 420px; height: auto; }
         .brand-pitch { font-size: 1.15rem; font-weight: 500; max-width: 580px; margin: 15px auto 40px auto; line-height: 1.6; opacity: 0.85; }
 
-        /* Grid del Menú Principal */
         .luxury-menu-grid { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
         .menu-sphere-btn {
             background: transparent; padding: 12px 24px; border-radius: 30px;
             font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600;
             color: var(--text-dark); cursor: pointer; transition: all 0.3s ease;
-            display: flex; align-items: center; gap: 8px;
+            display: flex; align-items: center; gap: 8px; border: 1.5px solid transparent;
         }
-        .menu-sphere-btn.btn-alquiler { border: 1.5px solid var(--logo-lila); }
-        .menu-sphere-btn.btn-boutique { border: 1.5px solid var(--logo-melocoton); }
-        .menu-sphere-btn.btn-propuesta { border: 1.5px solid var(--logo-amarillo); }
-        .menu-sphere-btn.btn-contacto { border: 1.5px solid var(--logo-celeste); }
+        .menu-sphere-btn.btn-alquiler { border-color: var(--logo-lila); }
+        .menu-sphere-btn.btn-boutique { border-color: var(--logo-melocoton); }
+        .menu-sphere-btn.btn-admin { border-color: var(--text-dark); background: rgba(0,0,0,0.02); }
+        .menu-sphere-btn.btn-contacto { border-color: var(--logo-celeste); }
         .menu-sphere-btn:hover { background: var(--text-dark); color: white; transform: translateY(-2px); }
 
-        /* --- BOTÓN FLOTANTE PARA VOLVER AL INICIO --- */
+        /* --- BOTÓN VOLVER AL INICIO --- */
         .home-anchor-btn {
-            position: fixed;
-            top: 25px; left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: white; padding: 10px 24px; border-radius: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1000;
             font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600;
             color: var(--text-dark); cursor: pointer; border: 1px solid rgba(0,0,0,0.05);
-            display: flex; align-items: center; gap: 8px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 8px; transition: transform 0.4s;
         }
         .home-anchor-btn.visible { transform: translateX(-50%) translateY(0); }
-        .home-anchor-btn:hover { background: var(--text-dark); color: white; }
 
-        /* --- DISEÑO DE TARJETAS e INTERNAS --- */
         .section-title { font-family: var(--font-display); font-size: 3rem; margin-bottom: 15px; text-align: center; }
-        .section-subtitle { font-size: 1.1rem; max-width: 600px; text-align: center; margin-bottom: 30px; opacity: 0.8; line-height: 1.6; }
-        .premium-showcase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; width: 100%; max-width: 1200px; }
+        .section-subtitle { font-size: 1.1rem; max-width: 600px; text-align: center; margin-bottom: 30px; opacity: 0.8; }
+
+        /* --- DISPLAY DE STOCK PÚBLICO --- */
+        .stock-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; background: #fdf2f2; color: #c94c4c;
+            border-radius: 30px; font-size: 0.85rem; font-weight: 700;
+            margin-bottom: 15px; width: fit-content;
+        }
+        .stock-badge.in-stock { background: #f2fdf4; color: #4cc970; }
+
+        /* Split Boutique */
+        .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; max-width: 1050px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); }
+        .boutique-gallery-pane { min-height: 450px; background-size: cover; background-position: center; }
+        .boutique-content-pane { padding: 40px 50px; display: flex; flex-direction: column; justify-content: center; }
         
-        .showcase-card { background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.03); display: flex; flex-direction: column; }
-        .card-media { height: 260px; background-size: cover; background-position: center; }
-        .card-info-box { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; }
-        .card-info-box h3 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 10px; }
-        .card-info-box p { font-size: 0.95rem; line-height: 1.6; opacity: 0.75; margin-bottom: 20px; flex-grow: 1; }
-
-        .premium-tag { display: inline-block; padding: 6px 14px; background: var(--bg-cream); border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
-
-        /* Botón Cotizar */
         .action-quote-btn {
             background: transparent; border: 1.5px solid var(--text-dark); color: var(--text-dark);
             padding: 12px 20px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.9rem;
-            font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-            gap: 8px; transition: all 0.3s; margin-top: 10px; width: 100%;
+            font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s;
         }
         .action-quote-btn:hover { background: var(--text-dark); color: white; }
 
-        /* Split Boutique */
-        .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; max-width: 1050px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); margin-bottom: 40px; }
-        .boutique-gallery-pane { min-height: 450px; background-size: cover; background-position: center; }
-        .boutique-content-pane { padding: 40px 50px; display: flex; flex-direction: column; justify-content: center; }
-        .info-label-group { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0; }
-        .info-block-column h4 { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 12px; }
-        .info-list-items { list-style: none; }
-        .info-list-items li { font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px; opacity: 0.85; display: flex; gap: 8px; }
-        .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-
-        /* --- NUEVO: GRID DE COLORES DE ARENA --- */
-        .color-palette-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; max-width: 1050px; margin-top: 20px; }
-        .color-card { background: white; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border-top: 5px solid var(--text-dark); }
-        .color-circle { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px auto; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); }
-
-        /* --- NUEVO: SECCIÓN PROPUESTA DE VALOR / PITCH --- */
-        .pitch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; max-width: 1100px; margin-top: 20px; }
-        .pitch-box { background: white; padding: 35px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); }
-        .pitch-box i { font-size: 2rem; margin-bottom: 15px; display: block; }
-
-        /* --- NUEVO: PREGUNTAS FRECUENTES (FAQ) --- */
-        .faq-container { width: 100%; max-width: 800px; margin: 30px auto 0 auto; text-align: left; }
-        .faq-item { background: white; padding: 20px 25px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.01); }
-        .faq-item h4 { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 8px; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
-        .faq-item p { font-size: 0.95rem; opacity: 0.8; line-height: 1.5; }
+        /* PANEL DE ADMINISTRACIÓN PROTEGIDO */
+        .admin-auth-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); text-align: center; max-width: 400px; width: 100%; margin: auto; }
+        .pin-input { width: 100%; text-align: center; font-size: 2rem; letter-spacing: 10px; padding: 10px; border-radius: 15px; border: 2px solid var(--logo-lila); outline: none; margin: 20px 0; font-family: var(--font-display); }
+        
+        .admin-dashboard { display: none; width: 100%; max-width: 900px; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); }
+        .inventory-manager-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        .inventory-manager-table th, .inventory-manager-table td { padding: 15px; border-bottom: 1px solid #f0e9e2; }
+        .inventory-manager-table th { font-family: var(--font-display); color: var(--text-dark); }
+        
+        .qty-control-btn { background: var(--bg-cream); border: 1px solid #ddd; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; }
+        .qty-control-btn:hover { background: var(--text-dark); color: white; }
+        .qty-display { font-size: 1.1rem; font-weight: 700; width: 40px; display: inline-block; text-align: center; }
 
         /* Formulario */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; margin: auto 0; }
         .form-row { margin-bottom: 20px; }
         .form-row label { display: block; font-family: var(--font-display); font-size: 0.95rem; margin-bottom: 8px; }
         .form-row input, .form-row textarea { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid var(--bg-cream); background: var(--bg-cream); font-family: var(--font-sans); outline: none; }
-        .form-row input:focus, .form-row textarea:focus { border-color: var(--logo-celeste); background: white; }
         .btn-luxury-submit { width: 100%; background: var(--logo-melocoton); color: white; border: none; padding: 16px; border-radius: 50px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-luxury-submit:hover { background: var(--text-dark); }
 
         #alquiler { background-color: #f7f3fb; }
         #boutique { background-color: #fffaf7; }
-        #propuesta { background-color: #fffdf2; }
+        #adminPanel { background-color: #f0f4f8; }
         #contacto { background-color: #f2fafb; }
 
-        /* Estilos de respuesta adaptables */
         @media (max-width: 850px) {
             .split-boutique-container { grid-template-columns: 1fr; }
-            .boutique-gallery-pane { min-height: 280px; }
+            .boutique-gallery-pane { min-height: 250px; }
             .boutique-content-pane { padding: 30px; }
-            .info-label-group { grid-template-columns: 1fr; gap: 20px; }
-            .section-title { font-size: 2.2rem; }
-        }
-        
-        @media (max-height: 800px) {
-            .section-title { font-size: 2.2rem; margin-bottom: 5px; }
-            .section-subtitle { margin-bottom: 15px; font-size: 1rem; }
-            .boutique-gallery-pane { min-height: 300px; }
-            .boutique-content-pane { padding: 25px 35px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Botón de regreso flotante -->
     <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
         <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
     </div>
 
-    <!-- MAIN SLIDER ENGINE -->
     <div class="window-slider" id="mainSlider">
         
-        <!-- ================= SECCIÓN 1: HOME ================= -->
         <section id="home">
             <div class="center-universe">
-                <div class="main-brand-logo" onclick="slideTo(0)">
-                    <img src="Logo.png" alt="Camemani Kids">
-                </div>
+                <div class="main-brand-logo"> <img src="Logo.png" alt="Camemani Kids"> </div>
                 <p class="brand-pitch">Diseñamos rincones de juego sofisticados y estimulación orgánica de lujo para los eventos infantiles más exclusivos de Costa Rica.</p>
                 <div class="luxury-menu-grid">
                     <button class="menu-sphere-btn btn-alquiler" onclick="slideTo(1)">Alquiler de Parques</button>
                     <button class="menu-sphere-btn btn-boutique" onclick="slideTo(2)">Arena Sensorial</button>
-                    <button class="menu-sphere-btn btn-propuesta" onclick="slideTo(3)">Modelo de Negocio</button>
-                    <button class="menu-sphere-btn btn-contacto" onclick="slideTo(4)">Cotizar Espacio</button>
+                    <button class="menu-sphere-btn btn-contacto" onclick="slideTo(3)">Cotizar Espacio</button>
+                    <button class="menu-sphere-btn btn-admin" onclick="slideTo(4)"><i class="fa-solid fa-lock"></i> Staff Admin</button>
                 </div>
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 2: ALQUILER ================= -->
         <section id="alquiler">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-lila);">Espacios Montessori</h2>
                 <p class="section-subtitle">Transformamos cualquier jardín o salón en un santuario estético de exploración libre.</p>
-                <div class="premium-showcase-grid">
-                    <div class="showcase-card">
-                        <div class="card-media" style="background-image: url('https://raw.githubusercontent.com/AnhellO/pictures/main/image_a0587b.jpg');"></div>
-                        <div class="card-info-box">
-                            <span class="premium-tag" style="color: var(--logo-lila);">Estimulación Pura</span>
-                            <h3 style="margin-top: 10px;">Areneros Infantiles Premium</h3>
-                            <p>Estructuras de madera pulida de alta calidad, equipadas con juguetes de estimulación seleccionados.</p>
-                            <button class="action-quote-btn" onclick="cotizarProducto('Alquiler de Areneros Infantiles Premium')">Cotizar Arenero</button>
-                        </div>
-                    </div>
-                    <div class="showcase-card">
-                        <div class="card-media" style="background-image: url('https://images.unsplash.com/photo-1603354361200-e71e98cb829d?q=80&w=1200&auto=format&fit=crop');"></div>
-                        <div class="card-info-box">
-                            <span class="premium-tag" style="color: var(--logo-melocoton);">Filosofía Montessori</span>
-                            <h3 style="margin-top: 10px;">Mesas Sensoriales y de Juego</h3>
-                            <p>Diseñadas a la altura perfecta de los niños para fomentar la autonomía y concentración.</p>
-                            <button class="action-quote-btn" onclick="cotizarProducto('Alquiler de Mesas Sensoriales Montessori')">Cotizar Mesa de Juego</button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE (CON PALETA DE COLORES) ================= -->
         <section id="boutique">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
-                <p class="section-subtitle" style="font-style: italic;">"Para explorar, crear y jugar sin límites."</p>
+                <p class="section-subtitle">"Para explorar, crear y jugar sin límites."</p>
                 
                 <div class="split-boutique-container">
                     <div class="boutique-gallery-pane" style="background-image: url('Arena.jpg');"></div>
                     <div class="boutique-content-pane">
-                        <span class="premium-tag" style="background-color: var(--logo-amarillo);">Boutique Oficial</span>
-                        <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: 10px 0 5px 0;">Colección Arcoíris Metódico</h3>
-                        <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5; margin-bottom: 15px;">Una experiencia táctil única, diseñada meticulosamente con colores vibrantes para cautivar los sentidos de forma orgánica.</p>
-                        
-                        <div class="info-label-group">
-                            <div class="info-block-column">
-                                <h4 style="color: var(--logo-melocoton);"><i class="fa-solid fa-star"></i> Características</h4>
-                                <ul class="info-list-items">
-                                    <li><i class="fa-solid fa-leaf" style="color: #8cb89f;"></i> 100% natural, no tóxica y segura.</li>
-                                    <li><i class="fa-solid fa-hand-sparkles" style="color: var(--logo-melocoton);"></i> Textura gruesa, agradable al tacto.</li>
-                                    <li><i class="fa-solid fa-shapes" style="color: var(--logo-lila);"></i> Ideal para actividades sensoriales y recreativas.</li>
-                                </ul>
-                            </div>
-                            <div class="info-block-column">
-                                <h4 style="color: var(--logo-lila);"><i class="fa-solid fa-child"></i> Beneficios en el Juego</h4>
-                                <ul class="info-list-items">
-                                    <li><i class="fa-solid fa-lightbulb" style="color: var(--logo-amarillo);"></i> Estimula la creatividad e imaginación.</li>
-                                    <li><i class="fa-solid fa-hand" style="color: var(--logo-melocoton);"></i> Desarrolla la motricidad fina y la coordinación.</li>
-                                    <li><i class="fa-solid fa-brain" style="color: var(--logo-celeste);"></i> Promueve la concentración y la calma.</li>
-                                    <li><i class="fa-solid fa-users" style="color: var(--logo-rosa);"></i> Fomenta el juego libre, la exploración y la socialización.</li>
-                                </ul>
-                            </div>
+                        <div id="publicStockBadge" class="stock-badge">
+                            <i class="fa-solid fa-box-open"></i> Sincronizando con la nube...
                         </div>
-
-                        <div class="badge-row">
-                            <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
-                            <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
-                        </div>
-
-                        <button class="action-quote-btn" onclick="cotizarProducto('Bolsas de Arena Sensorial (1kg)')">Cotizar Bolsas de Arena</button>
-                    </div>
-                </div>
-
-                <!-- Catálogo de la línea Arcoíris Metódico -->
-                <h3 class="section-title" style="font-size: 2rem; color: var(--text-dark); margin-top: 20px;">Línea de Estimulación Cromática</h3>
-                <div class="color-palette-showcase">
-                    <div class="color-card" style="border-top-color: var(--logo-celeste);">
-                        <div class="color-circle" style="background-color: var(--logo-celeste);"></div>
-                        <h4 style="font-family: var(--font-display);">Azul Sereno</h4>
-                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Diseñado para inducir estados de calma, bajar la ansiedad y prolongar los focos de concentración prolongada.</p>
-                    </div>
-                    <div class="color-card" style="border-top-color: var(--logo-rosa);">
-                        <div class="color-circle" style="background-color: var(--logo-rosa);"></div>
-                        <h4 style="font-family: var(--font-display);">Rosa Creativo</h4>
-                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Estimula el hemisferio derecho, ideal para dinámicas que integran figuras artísticas y juego libre.</p>
-                    </div>
-                    <div class="color-card" style="border-top-color: #a3d9a5;">
-                        <div class="color-circle" style="background-color: #a3d9a5;"></div>
-                        <h4 style="font-family: var(--font-display);">Verde Orgánico</h4>
-                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Evoca texturas naturales, perfecto para combinar con accesorios de madera Montessori y plantas.</p>
+                        <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 10px;">Colección Arcoíris Metódico</h3>
+                        <p style="font-size: 0.95rem; opacity: 0.75; line-height: 1.5; margin-bottom: 25px;">Una experiencia táctil única, diseñada de forma orgánica.</p>
+                        <button class="action-quote-btn" id="btnCotizarArena" onclick="cotizarProducto('Bolsas de Arena Sensorial (1kg)')">Cotizar Bolsas de Arena</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 4: PROPUESTA DE VALOR / PITCH PARA SOCIO ================= -->
-        <section id="propuesta">
-            <div class="safe-scroll-wrapper">
-                <h2 class="section-title" style="color: var(--logo-amarillo); -webkit-text-stroke: 0.5px var(--text-dark);">El Modelo de Negocio</h2>
-                <p class="section-subtitle">Por qué Camemani Kids es un ecosistema escalable y de alta demanda en el mercado actual.</p>
-                
-                <div class="pitch-grid">
-                    <div class="pitch-box">
-                        <i class="fa-solid fa-chart-line" style="color: var(--logo-melocoton);"></i>
-                        <h3 style="font-family: var(--font-display); margin-bottom: 10px;">Alta Rentabilidad</h3>
-                        <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">La arena sensorial cuenta con procesos de producción optimizados que garantizan márgenes amplios. Un modelo híbrido entre retail de producto y alquiler de servicios corporativos.</p>
-                    </div>
-                    <div class="pitch-box">
-                        <i class="fa-solid fa-gem" style="color: var(--logo-lila);"></i>
-                        <h3 style="font-family: var(--font-display); margin-bottom: 10px;">Nicho Estético Premium</h3>
-                        <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">Nos alejamos de la oferta saturada de plástico tradicional. Apuntamos a padres modernos que priorizan la armonía visual de sus eventos y el desarrollo cognitivo real de sus hijos.</p>
-                    </div>
-                    <div class="pitch-box">
-                        <i class="fa-solid fa-recycle" style="color: var(--logo-celeste);"></i>
-                        <h3 style="font-family: var(--font-display); margin-bottom: 10px;">Logística Circular</h3>
-                        <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">Los parques Montessori se amortizan en pocos alquileres. La infraestructura es duradera, de madera tratada y fácil de transportar en rutas urbanas eficientes.</p>
-                    </div>
-                </div>
-
-                <!-- Bloque FAQ para calmar dudas de operación -->
-                <div class="faq-container">
-                    <h3 style="font-family: var(--font-display); font-size: 1.6rem; text-align: center; margin: 40px 0 20px 0;">Preguntas de Operación</h3>
-                    <div class="faq-item">
-                        <h4><i class="fa-solid fa-shield-virus"></i> ¿La arena es sanitizada en los alquileres?</h4>
-                        <p>Sí, implementamos un protocolo estricto post-evento mediante filtrado fino y exposición UV orgánica para asegurar la total higiene en cada montaje familiar.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h4><i class="fa-solid fa-cake-candles"></i> ¿A qué sectores comerciales apuntamos?</h4>
-                        <p>Cumpleaños privados de gama alta, salones de té, áreas infantiles en bodas de hotel y talleres interactivos dentro de escuelas infantiles privadas.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= SECCIÓN 5: CONTACTO ================= -->
         <section id="contacto">
             <div class="luxury-contact-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton); font-size: 2.2rem;">Planifiquemos un Día Inolvidable</h2>
                 <form onsubmit="sendToWhatsApp(event)">
-                    <div class="form-row">
-                        <label>Tu Nombre</label>
-                        <input type="text" id="clientName" required>
-                    </div>
-                    <div class="form-row">
-                        <label>Fecha del Evento</label>
-                        <input type="text" id="eventDate">
-                    </div>
-                    <div class="form-row">
-                        <label>¿Qué experiencia te interesa?</label>
-                        <textarea id="eventDetails" rows="3" required></textarea>
-                    </div>
+                    <div class="form-row"> <label>Tu Nombre</label> <input type="text" id="clientName" required> </div>
+                    <div class="form-row"> <label>Fecha del Evento</label> <input type="text" id="eventDate"> </div>
+                    <div class="form-row"> <label>¿Qué experiencia te interesa?</label> <textarea id="eventDetails" rows="3" required></textarea> </div>
                     <button type="submit" class="btn-luxury-submit">Enviar a WhatsApp Directo</button>
                 </form>
+            </div>
+        </section>
+
+        <section id="adminPanel">
+            <div class="safe-scroll-wrapper">
+                <div class="admin-auth-card" id="authCard">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 3rem;"></i>
+                    <h3 style="font-family: var(--font-display); margin-top: 15px;">Acceso Privado Staff</h3>
+                    <input type="password" class="pin-input" id="adminPin" maxlength="4" placeholder="••••" oninput="verificarPin()">
+                    <div id="loginError" style="color: #c94c4c; font-size: 0.85rem; font-weight: bold; display: none;">Código incorrecto.</div>
+                </div>
+
+                <div class="admin-dashboard" id="adminDashboard">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg-cream); padding-bottom: 15px;">
+                        <h3 style="font-family: var(--font-display); font-size: 1.8rem;"><i class="fa-solid fa-boxes-stacked"></i> Control de Stock en la Nube</h3>
+                        <button class="action-quote-btn" style="width: auto; padding: 6px 15px; font-size: 0.8rem;" onclick="location.reload()">Cerrar Sesión</button>
+                    </div>
+                    <table class="inventory-manager-table">
+                        <thead>
+                            <tr>
+                                <th>Línea de Producto</th>
+                                <th>Estado Realtime</th>
+                                <th style="text-align: center;">Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Bolsas de Arena Sensorial (1kg)</strong></td>
+                                <td id="adminStockStatus">Sincronizado</td>
+                                <td style="text-align: center; white-space: nowrap;">
+                                    <button class="qty-control-btn" onclick="modificarStock(-1)">-</button>
+                                    <span class="qty-display" id="adminStockQty">0</span>
+                                    <button class="qty-control-btn" onclick="modificarStock(1)">+</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
     </div>
 
     <script>
+        // Lógica estructural de navegación básica
         const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
 
         function slideTo(sectionIndex) {
             const targetX = sectionIndex * window.innerWidth;
-            slider.scrollTo({
-                left: targetX,
-                behavior: 'smooth'
-            });
+            slider.scrollTo({ left: targetX, behavior: 'smooth' });
         }
 
         slider.addEventListener('scroll', () => {
-            const currentPosition = slider.scrollLeft;
-            if (currentPosition > (window.innerWidth / 2)) {
+            if (slider.scrollLeft > (window.innerWidth / 2)) {
                 backHomeBtn.classList.add('visible');
             } else {
                 backHomeBtn.classList.remove('visible');
@@ -413,11 +346,8 @@
 
         function cotizarProducto(nombreProducto) {
             document.getElementById('eventDetails').value = `Me interesa obtener más información y cotizar: ${nombreProducto}.`;
-            slideTo(4); // Movido a 4 porque agregamos una sección intermedia
-            
-            setTimeout(() => {
-                document.getElementById('clientName').focus();
-            }, 750);
+            slideTo(3);
+            setTimeout(() => { document.getElementById('clientName').focus(); }, 750);
         }
 
         function sendToWhatsApp(event) {
