@@ -61,11 +61,11 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* CORRECCIÓN: Alinea al inicio para permitir scroll correcto */
+            justify-content: flex-start; 
             align-items: center;
-            padding: 90px 20px 40px 20px;
+            padding: 100px 20px 60px 20px;
             position: relative;
-            overflow-y: auto; /* Permite scroll vertical libre si el contenido es más alto que la pantalla */
+            overflow-y: auto; 
             overflow-x: hidden;
             scroll-snap-align: start; 
         }
@@ -82,7 +82,7 @@
 
         /* --- SECCIÓN 1: HOME --- */
         #home { background: radial-gradient(circle at center, #ffffff 0%, var(--bg-cream) 100%); }
-        .center-universe { text-align: center; max-width: 650px; z-index: 10; margin: auto 0; }
+        .center-universe { text-align: center; max-width: 750px; z-index: 10; margin: auto 0; }
         
         .main-brand-logo {
             margin-bottom: 25px;
@@ -99,10 +99,10 @@
             100% { transform: translateY(-22px) rotate(0.8deg); }
         }
 
-        .brand-pitch { font-size: 1.1rem; font-weight: 500; max-width: 480px; margin: 15px auto 40px auto; line-height: 1.6; opacity: 0.85; }
+        .brand-pitch { font-size: 1.15rem; font-weight: 500; max-width: 580px; margin: 15px auto 40px auto; line-height: 1.6; opacity: 0.85; }
 
-        /* Grid del Menú */
-        .luxury-menu-grid { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        /* Grid del Menú Principal */
+        .luxury-menu-grid { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
         .menu-sphere-btn {
             background: transparent; padding: 12px 24px; border-radius: 30px;
             font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600;
@@ -111,6 +111,7 @@
         }
         .menu-sphere-btn.btn-alquiler { border: 1.5px solid var(--logo-lila); }
         .menu-sphere-btn.btn-boutique { border: 1.5px solid var(--logo-melocoton); }
+        .menu-sphere-btn.btn-propuesta { border: 1.5px solid var(--logo-amarillo); }
         .menu-sphere-btn.btn-contacto { border: 1.5px solid var(--logo-celeste); }
         .menu-sphere-btn:hover { background: var(--text-dark); color: white; transform: translateY(-2px); }
 
@@ -142,7 +143,7 @@
 
         .premium-tag { display: inline-block; padding: 6px 14px; background: var(--bg-cream); border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
 
-        /* Botón Cotizar Finito */
+        /* Botón Cotizar */
         .action-quote-btn {
             background: transparent; border: 1.5px solid var(--text-dark); color: var(--text-dark);
             padding: 12px 20px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.9rem;
@@ -152,7 +153,7 @@
         .action-quote-btn:hover { background: var(--text-dark); color: white; }
 
         /* Split Boutique */
-        .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; max-width: 1050px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); }
+        .split-boutique-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; width: 100%; max-width: 1050px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.02); margin-bottom: 40px; }
         .boutique-gallery-pane { min-height: 450px; background-size: cover; background-position: center; }
         .boutique-content-pane { padding: 40px 50px; display: flex; flex-direction: column; justify-content: center; }
         .info-label-group { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0; }
@@ -160,6 +161,22 @@
         .info-list-items { list-style: none; }
         .info-list-items li { font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px; opacity: 0.85; display: flex; gap: 8px; }
         .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+        /* --- NUEVO: GRID DE COLORES DE ARENA --- */
+        .color-palette-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; max-width: 1050px; margin-top: 20px; }
+        .color-card { background: white; padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border-top: 5px solid var(--text-dark); }
+        .color-circle { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px auto; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); }
+
+        /* --- NUEVO: SECCIÓN PROPUESTA DE VALOR / PITCH --- */
+        .pitch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; max-width: 1100px; margin-top: 20px; }
+        .pitch-box { background: white; padding: 35px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); }
+        .pitch-box i { font-size: 2rem; margin-bottom: 15px; display: block; }
+
+        /* --- NUEVO: PREGUNTAS FRECUENTES (FAQ) --- */
+        .faq-container { width: 100%; max-width: 800px; margin: 30px auto 0 auto; text-align: left; }
+        .faq-item { background: white; padding: 20px 25px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.01); }
+        .faq-item h4 { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 8px; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+        .faq-item p { font-size: 0.95rem; opacity: 0.8; line-height: 1.5; }
 
         /* Formulario */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; margin: auto 0; }
@@ -172,9 +189,10 @@
 
         #alquiler { background-color: #f7f3fb; }
         #boutique { background-color: #fffaf7; }
+        #propuesta { background-color: #fffdf2; }
         #contacto { background-color: #f2fafb; }
 
-        /* Optimización responsiva para pantallas pequeñas o laptops de baja resolución */
+        /* Estilos de respuesta adaptables */
         @media (max-width: 850px) {
             .split-boutique-container { grid-template-columns: 1fr; }
             .boutique-gallery-pane { min-height: 280px; }
@@ -186,9 +204,8 @@
         @media (max-height: 800px) {
             .section-title { font-size: 2.2rem; margin-bottom: 5px; }
             .section-subtitle { margin-bottom: 15px; font-size: 1rem; }
-            .boutique-gallery-pane { min-height: 350px; }
+            .boutique-gallery-pane { min-height: 300px; }
             .boutique-content-pane { padding: 25px 35px; }
-            .info-label-group { margin: 10px 0; gap: 15px; }
         }
     </style>
 </head>
@@ -212,7 +229,8 @@
                 <div class="luxury-menu-grid">
                     <button class="menu-sphere-btn btn-alquiler" onclick="slideTo(1)">Alquiler de Parques</button>
                     <button class="menu-sphere-btn btn-boutique" onclick="slideTo(2)">Arena Sensorial</button>
-                    <button class="menu-sphere-btn btn-contacto" onclick="slideTo(3)">Cotizar Espacio</button>
+                    <button class="menu-sphere-btn btn-propuesta" onclick="slideTo(3)">Modelo de Negocio</button>
+                    <button class="menu-sphere-btn btn-contacto" onclick="slideTo(4)">Cotizar Espacio</button>
                 </div>
             </div>
         </section>
@@ -245,7 +263,7 @@
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 3: BOUTIQUE ================= -->
+        <!-- ================= SECCIÓN 3: BOUTIQUE (CON PALETA DE COLORES) ================= -->
         <section id="boutique">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
@@ -281,16 +299,74 @@
                         <div class="badge-row">
                             <span class="premium-tag" style="background: #f1ecf7; font-size: 0.75rem;"><i class="fa-solid fa-weight-hanging"></i> Contenido Neto: 1 kg</span>
                             <span class="premium-tag" style="background: #edf7f4; font-size: 0.75rem;"><i class="fa-solid fa-shield-heart"></i> Para todas las edades</span>
-                            <span class="premium-tag" style="background: #fff5f5; font-size: 0.75rem; color: #c94c4c;"><i class="fa-solid fa-eye"></i> Uso bajo supervisión de un adulto</span>
                         </div>
 
                         <button class="action-quote-btn" onclick="cotizarProducto('Bolsas de Arena Sensorial (1kg)')">Cotizar Bolsas de Arena</button>
                     </div>
                 </div>
+
+                <!-- Catálogo de la línea Arcoíris Metódico -->
+                <h3 class="section-title" style="font-size: 2rem; color: var(--text-dark); margin-top: 20px;">Línea de Estimulación Cromática</h3>
+                <div class="color-palette-showcase">
+                    <div class="color-card" style="border-top-color: var(--logo-celeste);">
+                        <div class="color-circle" style="background-color: var(--logo-celeste);"></div>
+                        <h4 style="font-family: var(--font-display);">Azul Sereno</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Diseñado para inducir estados de calma, bajar la ansiedad y prolongar los focos de concentración prolongada.</p>
+                    </div>
+                    <div class="color-card" style="border-top-color: var(--logo-rosa);">
+                        <div class="color-circle" style="background-color: var(--logo-rosa);"></div>
+                        <h4 style="font-family: var(--font-display);">Rosa Creativo</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Estimula el hemisferio derecho, ideal para dinámicas que integran figuras artísticas y juego libre.</p>
+                    </div>
+                    <div class="color-card" style="border-top-color: #a3d9a5;">
+                        <div class="color-circle" style="background-color: #a3d9a5;"></div>
+                        <h4 style="font-family: var(--font-display);">Verde Orgánico</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.8; margin-top: 5px;">Evoca texturas naturales, perfecto para combinar con accesorios de madera Montessori y plantas.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- ================= SECCIÓN 4: CONTACTO ================= -->
+        <!-- ================= SECCIÓN 4: PROPUESTA DE VALOR / PITCH PARA SOCIO ================= -->
+        <section id="propuesta">
+            <div class="safe-scroll-wrapper">
+                <h2 class="section-title" style="color: var(--logo-amarillo); -webkit-text-stroke: 0.5px var(--text-dark);">El Modelo de Negocio</h2>
+                <p class="section-subtitle">Por qué Camemani Kids es un ecosistema escalable y de alta demanda en el mercado actual.</p>
+                
+                <div class="pitch-grid">
+                    <div class="pitch-box">
+                        <i class="fa-solid fa-chart-line" style="color: var(--logo-melocoton);"></i>
+                        <h3 style="font-family: var(--font-display); margin-bottom: 10px;">Alta Rentabilidad</h3>
+                        <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">La arena sensorial cuenta con procesos de producción optimizados que garantizan márgenes amplios. Un modelo híbrido entre retail de producto y alquiler de servicios corporativos.</p>
+                    </div>
+                    <div class="pitch-box">
+                        <i class="fa-solid fa-gem" style="color: var(--logo-lila);"></i>
+                        <h3 style="font-family: var(--font-display); margin-bottom: 10px;">Nicho Estético Premium</h3>
+                        <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">Nos alejamos de la oferta saturada de plástico tradicional. Apuntamos a padres modernos que priorizan la armonía visual de sus eventos y el desarrollo cognitivo real de sus hijos.</p>
+                    </div>
+                    <div class="pitch-box">
+                        <i class="fa-solid fa-recycle" style="color: var(--logo-celeste);"></i>
+                        <h3 style="font-family: var(--font-display); margin-bottom: 10px;">Logística Circular</h3>
+                        <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">Los parques Montessori se amortizan en pocos alquileres. La infraestructura es duradera, de madera tratada y fácil de transportar en rutas urbanas eficientes.</p>
+                    </div>
+                </div>
+
+                <!-- Bloque FAQ para calmar dudas de operación -->
+                <div class="faq-container">
+                    <h3 style="font-family: var(--font-display); font-size: 1.6rem; text-align: center; margin: 40px 0 20px 0;">Preguntas de Operación</h3>
+                    <div class="faq-item">
+                        <h4><i class="fa-solid fa-shield-virus"></i> ¿La arena es sanitizada en los alquileres?</h4>
+                        <p>Sí, implementamos un protocolo estricto post-evento mediante filtrado fino y exposición UV orgánica para asegurar la total higiene en cada montaje familiar.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h4><i class="fa-solid fa-cake-candles"></i> ¿A qué sectores comerciales apuntamos?</h4>
+                        <p>Cumpleaños privados de gama alta, salones de té, áreas infantiles en bodas de hotel y talleres interactivos dentro de escuelas infantiles privadas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECCIÓN 5: CONTACTO ================= -->
         <section id="contacto">
             <div class="luxury-contact-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton); font-size: 2.2rem;">Planifiquemos un Día Inolvidable</h2>
@@ -337,7 +413,7 @@
 
         function cotizarProducto(nombreProducto) {
             document.getElementById('eventDetails').value = `Me interesa obtener más información y cotizar: ${nombreProducto}.`;
-            slideTo(3);
+            slideTo(4); // Movido a 4 porque agregamos una sección intermedia
             
             setTimeout(() => {
                 document.getElementById('clientName').focus();
