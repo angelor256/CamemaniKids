@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camemani Kids // Experiencias Sensoriales Premium</title>
     
+    <!-- Fuentes e Iconos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Conexión en Tiempo Real con Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -48,7 +50,6 @@
             const contenedorParquesCliente = document.getElementById('dynamicParksGrid');
             const contenedorPaquetesCliente = document.getElementById('dynamicPackagesGrid');
             
-            // Limpiar contenedores antes de renderizar cambios
             if (tbody) tbody.innerHTML = '';
             if (contenedorParquesCliente) contenedorParquesCliente.innerHTML = '';
             if (contenedorPaquetesCliente) contenedorPaquetesCliente.innerHTML = '';
@@ -80,7 +81,6 @@
                     }
 
                     // --- B. RENDERIZAR EN LA VISTA PÚBLICA DEL CLIENTE ---
-                    // Generamos el badge de stock para el cliente en vivo
                     let badgeStockCliente = `<span style="color:#4cc970; font-weight:600;"><i class="fa-solid fa-circle-check"></i> Disponible (${producto.stock} uds)</span>`;
                     if (producto.stock <= 0) {
                         badgeStockCliente = `<span style="color:#c94c4c; font-weight:600;"><i class="fa-solid fa-circle-xmark"></i> Agotado temporalmente</span>`;
@@ -130,7 +130,6 @@
             }
         });
 
-        // Actualizar UI del producto estático (Arena Sensorial)
         function actualizarInterfazStock(stock) {
             const publicBadge = document.getElementById('publicStockBadge');
             const btnCotizar = document.getElementById('btnCotizarArena');
@@ -165,7 +164,6 @@
             set(stockRef, nuevoStock);
         }
 
-        // Modificar stock dinámico
         window.modificarStockDinamico = function(id, cambio, stockActual) {
             let nuevoStock = stockActual + cambio;
             if (nuevoStock < 0) nuevoStock = 0;
@@ -173,7 +171,6 @@
             set(itemRef, nuevoStock);
         }
 
-        // NUEVA FUNCIÓN: ELIMINAR / BASURERO EN LÍNEA
         window.eliminarProductoDinamico = function(id) {
             if(confirm("¿Estás seguro de que deseas eliminar este producto permanentemente de la web?")) {
                 const itemRef = ref(db, `inventario/nuevos_productos/${id}`);
@@ -200,7 +197,6 @@
             }
         }
 
-        // Enviar a Firebase
         window.agregarNuevoProducto = function(event) {
             event.preventDefault();
             const nombre = document.getElementById('newProdName').value;
@@ -310,7 +306,7 @@
         .meta-column ul { list-style: none; }
         .meta-column ul li { font-size: 0.9rem; margin-bottom: 8px; opacity: 0.8; display: flex; align-items: center; gap: 6px; }
 
-        /* S4: PAQUETES */
+        /* S4: PAQUETES Y FAQ */
         .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; margin-top: 10px; }
         .package-card { background: white; padding: 40px 30px; border-radius: 35px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
         .package-card.featured { border-color: var(--logo-melocoton); }
@@ -323,6 +319,14 @@
         .action-quote-btn { background: transparent; border: 1.5px solid var(--text-dark); color: var(--text-dark); padding: 12px 20px; border-radius: 30px; font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s; }
         .action-quote-btn:hover { background: var(--text-dark); color: white; }
 
+        /* Estilos FAQ restaurados */
+        .faq-section-wrapper { width: 100%; max-width: 850px; margin-top: 60px; background: white; padding: 40px; border-radius: 35px; box-shadow: 0 15px 40px rgba(0,0,0,0.01); }
+        .faq-title { font-family: var(--font-display); font-size: 2rem; color: var(--text-dark); margin-bottom: 25px; text-align: center; }
+        .faq-item { margin-bottom: 20px; border-bottom: 1px solid #f0e9e2; padding-bottom: 15px; }
+        .faq-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .faq-question { font-family: var(--font-display); font-size: 1.1rem; color: var(--text-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .faq-answer { font-size: 0.95rem; opacity: 0.8; line-height: 1.6; }
+
         /* S5: CONTACTO */
         .luxury-contact-wrapper { background: white; padding: 45px; border-radius: 40px; box-shadow: 0 30px 60px rgba(92, 77, 66, 0.05); width: 100%; max-width: 550px; margin: auto 0; }
         .form-row { margin-bottom: 20px; }
@@ -331,7 +335,7 @@
         .btn-luxury-submit { width: 100%; background: var(--logo-melocoton); color: white; border: none; padding: 16px; border-radius: 50px; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-luxury-submit:hover { background: var(--text-dark); }
 
-        /* S6: PANEL ADMIN */
+        /* S6: PANEL ADMIN PROTEGIDO */
         .admin-auth-card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.03); text-align: center; max-width: 400px; width: 100%; margin: auto; }
         .pin-input { width: 100%; text-align: center; font-size: 2rem; letter-spacing: 10px; padding: 10px; border-radius: 15px; border: 2px solid var(--logo-lila); outline: none; margin: 20px 0; font-family: var(--font-display); }
         
@@ -345,7 +349,7 @@
         .qty-control-btn:hover { background: var(--text-dark); color: white; }
         .qty-display { font-size: 1.1rem; font-weight: 700; width: 35px; display: inline-block; text-align: center; }
         
-        .delete-product-btn { background: #fdf2f2; color: #c94c4c; border: 1px solid #f5c2c2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
+        .delete-product-btn { background: #fdf2f2; color: #c94c4c; border: 1px solid #f5c2c2; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 30px; text-align: center; }
         .delete-product-btn:hover { background: #c94c4c; color: white; border-color: #c94c4c; }
 
         .add-product-form-box { background: var(--bg-cream); padding: 25px; border-radius: 20px; border: 1px dashed var(--logo-lila); height: fit-content; }
@@ -368,12 +372,14 @@
 </head>
 <body>
 
+    <!-- Botón Volver Flotante -->
     <div class="home-anchor-btn" id="backHomeBtn" onclick="slideTo(0)">
         <i class="fa-solid fa-arrow-left"></i> Volver al Menú principal
     </div>
 
     <div class="window-slider" id="mainSlider">
         
+        <!-- ================= SECCIÓN 1: HOME ================= -->
         <section id="home">
             <div class="center-universe">
                 <div class="main-brand-logo">
@@ -390,12 +396,14 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 2: ALQUILER DE PARQUES ================= -->
         <section id="alquiler">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-lila);">Parques Infantiles Estéticos</h2>
                 <p class="section-subtitle">Circuitos Montessori de madera y estimulación orgánica que se adaptan a la decoración de tu evento.</p>
                 
                 <div class="parks-grid">
+                    <!-- Productos estáticos bases -->
                     <div class="park-card">
                         <div class="park-img-pane" style="background-image: url('parque_mini.jpg'); background-color: #e5dbed;">
                             <div class="park-age-badge">0 a 3 años</div>
@@ -423,10 +431,12 @@
                     </div>
                 </div>
 
+                <!-- CONTENEDOR DINÁMICO EN VIVO PARA LOS ELEMENTOS CREADOS POR EL ADMIN -->
                 <div class="parks-grid" id="dynamicParksGrid" style="margin-top: 30px;"></div>
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 3: BOUTIQUE (ARENA SENSORIAL) ================= -->
         <section id="boutique">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton);">Arena Sensorial de Colores</h2>
@@ -463,6 +473,7 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 4: PAQUETES Y FAQ ================= -->
         <section id="paquetes">
             <div class="safe-scroll-wrapper">
                 <h2 class="section-title" style="color: var(--logo-amarillo);">Kits y Paquetes de Regalo</h2>
@@ -495,10 +506,32 @@
                     </div>
                 </div>
 
+                <!-- CONTENEDOR DINÁMICO EN VIVO PARA LOS PAQUETES CREADOS POR EL ADMIN -->
                 <div class="packages-grid" id="dynamicPackagesGrid" style="margin-top: 30px;"></div>
+
+                <!-- ================= SECCIÓN RESTAURADA: PREGUNTAS FRECUENTES ================= -->
+                <div class="faq-section-wrapper">
+                    <h3 class="faq-title"><i class="fa-solid fa-circle-question" style="color: var(--logo-amarillo);"></i> Preguntas Frecuentes</h3>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fa-solid fa-seedling" style="color: var(--logo-lila);"></i> ¿De qué está hecha la arena?</div>
+                        <div class="faq-answer">Nuestra arena sensorial es de base orgánica 100% natural. Se procesa con colorantes de grado alimenticio no tóxicos, garantizando total seguridad para la manipulación libre de los niños pequeños.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fa-solid fa-truck" style="color: var(--logo-melocoton);"></i> ¿Cómo funciona el alquiler de parques?</div>
+                        <div class="faq-answer">Nos encargamos de toda la logística. Llevamos las estructuras Montessori al lugar de tu evento dentro de la GAM, realizamos el montaje estético antes de que comience la celebración y desmontamos todo una vez finalizada la actividad.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question"><i class="fa-solid fa-broom" style="color: var(--logo-celeste);"></i> ¿Cómo cuidan la higiene del mobiliario?</div>
+                        <div class="faq-answer">La seguridad es nuestra prioridad. Cada pieza de madera, bloques blandos y piscinas de pelotas pasan por un protocolo estricto de desinfección profunda con productos orgánicos biodegradables antes y después de cada evento.</div>
+                    </div>
+                </div>
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 5: CONTACTO ================= -->
         <section id="contacto">
             <div class="luxury-contact-wrapper">
                 <h2 class="section-title" style="color: var(--logo-melocoton); font-size: 2.2rem;">Planifiquemos un Día Inolvidable</h2>
@@ -511,6 +544,7 @@
             </div>
         </section>
 
+        <!-- ================= SECCIÓN 6: PANEL ADMIN PROTEGIDO ================= -->
         <section id="adminPanel">
             <div class="safe-scroll-wrapper">
                 
@@ -528,6 +562,7 @@
                     </div>
 
                     <div class="admin-grid-panels">
+                        <!-- Lista de Inventario Completa -->
                         <div>
                             <h4 style="font-family: var(--font-display); margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Stock en Tiempo Real</h4>
                             <table class="inventory-manager-table">
@@ -553,6 +588,7 @@
                             </table>
                         </div>
 
+                        <!-- Formulario para Agregar -->
                         <div class="add-product-form-box">
                             <h4><i class="fa-solid fa-circle-plus" style="color: var(--logo-melocoton);"></i> Agregar Producto</h4>
                             <form id="formNuevoProducto" onsubmit="agregarNuevoProducto(event)">
@@ -582,6 +618,7 @@
 
     </div>
 
+    <!-- Scripts de Navegación Estructural -->
     <script>
         const slider = document.getElementById('mainSlider');
         const backHomeBtn = document.getElementById('backHomeBtn');
